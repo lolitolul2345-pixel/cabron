@@ -304,7 +304,7 @@ export default function Registro() {
           <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white">
             {/* Logo TecNM Izquierda */}
             <img
-              src="photos/Logo-TecNM.png"
+              src="/photos/Logo-TecNM.png"
               alt="Logo TecNM"
               className="h-16 w-auto object-contain shrink-0"
               onError={(e) => {
@@ -327,7 +327,7 @@ export default function Registro() {
 
             {/* Escudo TecNM Tuxtla Derecha */}
             <img
-              src="photos/tux.png"
+              src="/photos/tux.png"
               alt="Logo TecNM Tuxtla Gutiérrez"
               className="h-16 w-auto object-contain shrink-0"
               onError={(e) => {

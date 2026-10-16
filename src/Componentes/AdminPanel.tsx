@@ -132,7 +132,7 @@ export const AdminPanel: React.FC = () => {
         <div style={estilos.logosContenedor}>
           {/* Logo TecNM */}
           <img
-            src="photos/Logo-TecNM.png"
+            src="/photos/Logo-TecNM.png"
             alt="Logo TecNM"
             style={estilos.logoTecnm}
             onError={(e) => {
@@ -149,7 +149,7 @@ export const AdminPanel: React.FC = () => {
 
           {/* Escudo TecNM Tuxtla Gutiérrez */}
           <img
-            src="photos/tux.png"
+            src="/photos/tux.png"
             alt="Logo TecNM Tuxtla Gutiérrez"
             style={estilos.logoTuxtla}
             onError={(e) => {
