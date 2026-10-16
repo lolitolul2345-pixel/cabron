@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { supabase } from '../api_supabase/supabaseClient';
 import { exportarTablaExcel } from '../utils/excelExporter';
 
@@ -19,7 +18,6 @@ export interface AlumnoEvidencia {
 }
 
 export const AdminPanel: React.FC = () => {
-  const navigate = useNavigate();
 
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
   const [busqueda, setBusqueda] = useState<string>('');
