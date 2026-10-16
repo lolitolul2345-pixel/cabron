@@ -120,11 +120,6 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleCerrarSesion = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
-  };
-
   return (
     <div style={estilos.contenedor}>
       {/* ENCABEZADO INSTITUCIONAL CON LOGOTIPOS TUXTLA / TECNM */}
