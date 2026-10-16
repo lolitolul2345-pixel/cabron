@@ -36,41 +36,7 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
         setRegistros(data as AlumnoEvidencia[]);
-      } else {
-        // Datos de prueba con el esquema completo de las 4 conferencias
-        setRegistros([
-          {
-            id: '1',
-            num_control: '25270123',
-            nombre: 'Gómez Hernández Alejandro',
-            carrera: 'Ingeniería en Sistemas Computacionales',
-            semestre: '2',
-            grupo: 'A',
-            conferencia: 'Conferencia 1',
-            titulo_evidencia: 'Ponencia de IA y Ciberseguridad',
-            descripcion: 'Se abordaron modelos fundacionales y defensas perimetrales.',
-            evidencia_url_1: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300',
-            evidencia_url_2: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=300',
-            hora: new Date().toISOString()
-          },
-          {
-            id: '2',
-            num_control: '24270088',
-            nombre: 'López Morales Brenda',
-            carrera: 'Ingeniería Química',
-            semestre: '4',
-            grupo: 'B',
-            conferencia: 'Conferencia 2',
-            titulo_evidencia: 'Transición Energética Sostenible',
-            descripcion: 'Uso de biocombustibles en la industria química.',
-            evidencia_url_1: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300',
-            evidencia_url_2: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300',
-            hora: new Date().toISOString()
-          }
-        ]);
-      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Error al conectar con la base de datos.');
     } finally {

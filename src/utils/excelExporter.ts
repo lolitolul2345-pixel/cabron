@@ -100,33 +100,33 @@ export async function exportarTablaExcel(
       });
 
       const row = worksheet.getRow(currentRowIndex);
-      row.height = 120; // 120 puntos da espacio perfecto para fotos de 140px sin salirse
+      row.height = 135; // Otorga ~180 px reales de alto
       row.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
       row.getCell('num_control').alignment = { vertical: 'middle', horizontal: 'center' };
       row.getCell('semestre').alignment = { vertical: 'middle', horizontal: 'center' };
       row.getCell('grupo').alignment = { vertical: 'middle', horizontal: 'center' };
 
       // Foto 1: anclada en columna A, centrada y sin deformación
-      if (item.evidencia_url_1) {
+     if (item.evidencia_url_1) {
         const img1 = await descargarBufferImagen(item.evidencia_url_1);
         if (img1) {
           const imgId1 = workbook.addImage({ buffer: img1.buffer, extension: img1.extension });
           worksheet.addImage(imgId1, {
-            tl: { col: 0.15, row: currentRowIndex - 0.88 },
-            ext: { width: 140, height: 140 },
+            tl: { col: 0.18, row: currentRowIndex - 0.88 },
+            ext: { width: 115, height: 115 },
             editAs: 'oneCell'
           });
         }
       }
 
-      // Foto 2: anclada en columna B, centrada y sin deformación
+      // 3. Foto 2: centrada en la Columna B con margen seguro
       if (item.evidencia_url_2) {
         const img2 = await descargarBufferImagen(item.evidencia_url_2);
         if (img2) {
           const imgId2 = workbook.addImage({ buffer: img2.buffer, extension: img2.extension });
           worksheet.addImage(imgId2, {
-            tl: { col: 1.15, row: currentRowIndex - 0.88 },
-            ext: { width: 140, height: 140 },
+            tl: { col: 1.18, row: currentRowIndex - 0.88 },
+            ext: { width: 115, height: 115 },
             editAs: 'oneCell'
           });
         }
