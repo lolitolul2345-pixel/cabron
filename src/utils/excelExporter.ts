@@ -132,7 +132,7 @@ export async function exportarTablaExcel(
         }
       }
 
-      currentRowIndex++;
+      currentRowIndex++;  
     }
 
     currentRowIndex++;

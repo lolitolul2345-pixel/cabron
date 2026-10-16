@@ -230,45 +230,23 @@ export default function Registro() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       
-      {/* BARRA SUPERIOR INSTITUCIONAL */}
+  {/* BARRA SUPERIOR INSTITUCIONAL (TecNM Azul Marino #1B396A) */}
       <header className="bg-[#1B396A] text-white shadow-md border-b-4 border-amber-500 sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-inner">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-6 h-6 text-amber-400"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
-                />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold tracking-tight text-white">
-                  CHECKPOINT
-                </span>
-                <span className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-md">
-                  TecNM Tuxtla
-                </span>
-              </div>
-              <p className="text-xs text-blue-100/80 font-medium">
-                Instituto Tecnológico de Tuxtla Gutiérrez
-              </p>
-            </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-extrabold tracking-tight text-white">
+              CHECKPOINT
+            </span>
+            <span className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-md">
+              TecNM Tuxtla
+            </span>
           </div>
 
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/20 text-sm font-semibold text-white transition-all duration-200 shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 border border-white/20 text-sm font-semibold text-white transition-all duration-200 shadow-sm cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -320,8 +298,43 @@ export default function Registro() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden"
+          className="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden"
         >
+          {/* ZONA BLANCA INSTITUCIONAL CON AMBOS LOGOTIPOS */}
+          <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white">
+            {/* Logo TecNM Izquierda */}
+            <img
+              src="photos/Logo-TecNM.png"
+              alt="Logo TecNM"
+              className="h-16 w-auto object-contain shrink-0"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+
+            {/* Texto central institucional */}
+            <div className="text-center flex-1">
+              <span className="inline-block text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full mb-1.5">
+                TecNM Campus Tuxtla Gutiérrez
+              </span>
+              <h1 className="text-xl sm:text-2xl font-black text-[#1B396A] tracking-tight">
+                Registro de Evidencia de Conferencias
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+                Completa tus datos académicos y adjunta tu comprobante fotográfico de participación.
+              </p>
+            </div>
+
+            {/* Escudo TecNM Tuxtla Derecha */}
+            <img
+              src="photos/tux.png"
+              alt="Logo TecNM Tuxtla Gutiérrez"
+              className="h-16 w-auto object-contain shrink-0"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
           {/* SECCIÓN 1: DATOS ACADÉMICOS */}
           <div className="p-6 sm:p-8 border-b border-slate-100">
             <div className="flex items-center gap-2.5 mb-6">
