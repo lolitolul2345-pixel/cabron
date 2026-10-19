@@ -59,14 +59,22 @@ export async function exportarTablaExcel(
   };
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
-  const listaConferencias = ['Conferencia 1', 'Conferencia 2', 'Conferencia 3', 'Conferencia 4'];
+  const listaConferencias = [
+    'Conferencia 1',
+    'Conferencia 2',
+    'Conferencia 3',
+    'Conferencia 4',
+    'Conferencia 1 PM',
+    'Conferencia 2 PM',
+    'Conferencia 3 PM',
+    'Conferencia 4 PM'];
   let currentRowIndex = 2;
 
-  for (const conf of listaConferencias) {
+for (const conf of listaConferencias) {
     const registrosDeEstaConf = registros.filter((r) => {
       const confItem = (r.conferencia || '').toLowerCase().trim();
       const confBuscada = conf.toLowerCase().trim();
-      return confItem === confBuscada || confItem.includes(confBuscada.replace('conferencia ', ''));
+      return confItem === confBuscada;
     });
 
     if (registrosDeEstaConf.length === 0) continue;
