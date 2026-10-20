@@ -9,13 +9,18 @@ export interface AlumnoEvidencia {
   grupo: string;
   conferencia: string;
   titulo_evidencia: string;
-  descripcion: string;
-  evidencia_url_1?: string;
-  evidencia_url_2?: string;
+  descripcion?: string | null;
+  evidencia_url_1?: string | null;
+  evidencia_url_2?: string | null;
+  evidencia_url_3?: string | null;
+  evidencia_url_4?: string | null;
+  evidencia_url_5?: string | null;
   hora: string;
 }
 
-async function descargarBufferImagen(url: string): Promise<{ buffer: ArrayBuffer; extension: 'jpeg' | 'png' } | null> {
+async function descargarBufferImagen(
+  url: string
+): Promise<{ buffer: ArrayBuffer; extension: 'jpeg' | 'png' } | null> {
   try {
     const res = await fetch(url, { referrerPolicy: 'no-referrer' });
     if (!res.ok) return null;
@@ -35,27 +40,31 @@ export async function exportarTablaExcel(
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Conferencias TecNM');
 
-  // Columnas proporcionadas para tamaño mediano
+  // 1. Definición de columnas (13 columnas en total: A hasta M)
   worksheet.columns = [
-    { header: 'Foto 1', key: 'foto1', width: 24 },
-    { header: 'Foto 2', key: 'foto2', width: 24 },
-    { header: 'Núm. Control', key: 'num_control', width: 16 },
-    { header: 'Nombre del Alumno', key: 'nombre', width: 32 },
-    { header: 'Carrera', key: 'carrera', width: 28 },
+    { header: 'No. Control', key: 'num_control', width: 16 },
+    { header: 'Nombre del Estudiante', key: 'nombre', width: 32 },
+    { header: 'Carrera', key: 'carrera', width: 30 },
     { header: 'Semestre', key: 'semestre', width: 12 },
     { header: 'Grupo', key: 'grupo', width: 10 },
-    { header: 'Título / Resumen', key: 'resumen', width: 36 },
-    { header: 'Hora de Registro', key: 'hora', width: 22 }
+    { header: 'Título Evidencia', key: 'titulo_evidencia', width: 28 },
+    { header: 'Descripción', key: 'descripcion', width: 40 },
+    { header: 'Fecha y Hora', key: 'hora', width: 22 },
+    { header: 'Foto 1', key: 'evidencia_1', width: 24 },
+    { header: 'Foto 2', key: 'evidencia_2', width: 24 },
+    { header: 'Foto 3', key: 'evidencia_3', width: 24 },
+    { header: 'Foto 4', key: 'evidencia_4', width: 24 },
+    { header: 'Foto 5', key: 'evidencia_5', width: 24 },
   ];
 
-  // Encabezado institucional azul marino
+  // 2. Encabezado principal azul marino institucional
   const headerRow = worksheet.getRow(1);
   headerRow.height = 30;
   headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
   headerRow.fill = {
     type: 'pattern',
     pattern: 'solid',
-    fgColor: { argb: 'FF1B365D' }
+    fgColor: { argb: 'FF1B365D' },
   };
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
@@ -67,10 +76,13 @@ export async function exportarTablaExcel(
     'Conferencia 1 PM',
     'Conferencia 2 PM',
     'Conferencia 3 PM',
-    'Conferencia 4 PM'];
+    'Conferencia 4 PM',
+  ];
+
   let currentRowIndex = 2;
 
-for (const conf of listaConferencias) {
+  // 3. Iteración por cada conferencia agrupada
+  for (const conf of listaConferencias) {
     const registrosDeEstaConf = registros.filter((r) => {
       const confItem = (r.conferencia || '').toLowerCase().trim();
       const confBuscada = conf.toLowerCase().trim();
@@ -79,76 +91,83 @@ for (const conf of listaConferencias) {
 
     if (registrosDeEstaConf.length === 0) continue;
 
-    // Fila divisoria de cada conferencia
-    worksheet.mergeCells(`A${currentRowIndex}:I${currentRowIndex}`);
-    const sepRow = worksheet.getRow(currentRowIndex);
-    sepRow.height = 26;
-    const sepCell = worksheet.getCell(`A${currentRowIndex}`);
-    sepCell.value = `📍 ${conf.toUpperCase()} — (${registrosDeEstaConf.length} REGISTROS)`;
-    sepCell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
-    sepCell.fill = {
+    // Fila divisoria / Banner naranja de la conferencia (Columnas A a M)
+    const bannerRow = worksheet.getRow(currentRowIndex);
+    bannerRow.height = 26;
+    worksheet.mergeCells(`A${currentRowIndex}:M${currentRowIndex}`);
+    const bannerCell = worksheet.getCell(`A${currentRowIndex}`);
+    bannerCell.value = `📍 ${conf.toUpperCase()} — (${registrosDeEstaConf.length} REGISTROS)`;
+    bannerCell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+    bannerCell.fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: { argb: 'FFE69138' }
+      fgColor: { argb: 'FFE67E22' },
     };
-    sepCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    bannerCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+
     currentRowIndex++;
 
+    // Iteración por cada alumno registrado en esta conferencia
     for (const item of registrosDeEstaConf) {
-      worksheet.addRow({
-        foto1: '',
-        foto2: '',
-        num_control: item.num_control,
-        nombre: item.nombre,
-        carrera: item.carrera,
-        semestre: item.semestre,
-        grupo: item.grupo,
-        resumen: `${item.titulo_evidencia || 'Sin título'}\n\n${item.descripcion || ''}`,
-        hora: new Date(item.hora).toLocaleString()
-      });
-
       const row = worksheet.getRow(currentRowIndex);
-      row.height = 135; // Otorga ~180 px reales de alto
+      row.height = 135; // Altura segura para miniaturas de 115px sin desborde
+
+      // Inserción de textos en la fila
+      row.getCell('num_control').value = item.num_control;
+      row.getCell('nombre').value = item.nombre;
+      row.getCell('carrera').value = item.carrera;
+      row.getCell('semestre').value = item.semestre;
+      row.getCell('grupo').value = item.grupo;
+      row.getCell('titulo_evidencia').value = item.titulo_evidencia || 'Sin título';
+      row.getCell('descripcion').value = item.descripcion || 'Sin descripción';
+      row.getCell('hora').value = new Date(item.hora).toLocaleString();
+
+      // Alineación
       row.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
       row.getCell('num_control').alignment = { vertical: 'middle', horizontal: 'center' };
       row.getCell('semestre').alignment = { vertical: 'middle', horizontal: 'center' };
       row.getCell('grupo').alignment = { vertical: 'middle', horizontal: 'center' };
+      row.getCell('hora').alignment = { vertical: 'middle', horizontal: 'center' };
 
-      // Foto 1: anclada en columna A, centrada y sin deformación
-     if (item.evidencia_url_1) {
-        const img1 = await descargarBufferImagen(item.evidencia_url_1);
-        if (img1) {
-          const imgId1 = workbook.addImage({ buffer: img1.buffer, extension: img1.extension });
-          worksheet.addImage(imgId1, {
-            tl: { col: 0.18, row: currentRowIndex - 0.88 },
-            ext: { width: 115, height: 115 },
-            editAs: 'oneCell'
-          });
+      // Vector con las 5 fotos posibles (Foto 1 en col I [índice 8], Foto 2 en col J [índice 9], etc.)
+      const fotosUrls = [
+        item.evidencia_url_1,
+        item.evidencia_url_2,
+        item.evidencia_url_3,
+        item.evidencia_url_4,
+        item.evidencia_url_5,
+      ];
+
+      for (let f = 0; f < fotosUrls.length; f++) {
+        const fotoUrl = fotosUrls[f];
+        if (fotoUrl) {
+          const imgDescargada = await descargarBufferImagen(fotoUrl);
+          if (imgDescargada) {
+            const imgId = workbook.addImage({
+              buffer: imgDescargada.buffer,
+              extension: imgDescargada.extension,
+            });
+
+            worksheet.addImage(imgId, {
+              tl: { col: 8.18 + f, row: currentRowIndex - 0.88 },
+              ext: { width: 115, height: 115 },
+              editAs: 'oneCell',
+            });
+          }
         }
       }
 
-      // 3. Foto 2: centrada en la Columna B con margen seguro
-      if (item.evidencia_url_2) {
-        const img2 = await descargarBufferImagen(item.evidencia_url_2);
-        if (img2) {
-          const imgId2 = workbook.addImage({ buffer: img2.buffer, extension: img2.extension });
-          worksheet.addImage(imgId2, {
-            tl: { col: 1.18, row: currentRowIndex - 0.88 },
-            ext: { width: 115, height: 115 },
-            editAs: 'oneCell'
-          });
-        }
-      }
-
-      currentRowIndex++;  
+      currentRowIndex++;
     }
 
+    // Fila vacía de separación entre bloques de conferencias
     currentRowIndex++;
   }
 
+  // 4. Generación y descarga del archivo Excel (.xlsx)
   const bufferSalida = await workbook.xlsx.writeBuffer();
   const blob = new Blob([bufferSalida], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
 
   const url = window.URL.createObjectURL(blob);

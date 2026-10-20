@@ -41,7 +41,7 @@ const CONFERENCIAS = [
   { id: 'Conferencia 1 PM', label: 'Conferencia 1 (PM)' },
   { id: 'Conferencia 2 PM', label: 'Conferencia 2 (PM)' },
   { id: 'Conferencia 3 PM', label: 'Conferencia 3 (PM)' },
-  { id: 'Conferencia 4 PM', label: 'Conferencia 4 (PM)' },
+  { id: 'Conferencia 4 PM', label: 'Conferencia 4 (PM)' },  
 ];
 
 const SEMESTRES = ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°+'];
@@ -84,11 +84,11 @@ export default function Registro() {
     setErrorMsg(null);
   };
 
-  const processFiles = (files: FileList | null) => {
+ const processFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    const maxSizeBytes = 20 * 1024 * 1024; // 20 MB por imagen
+    const maxSizeBytes = 20 * 1024 * 1024;
     const nuevasImagenes: PreviewImage[] = [];
 
     Array.from(files).forEach((file) => {
@@ -108,8 +108,8 @@ export default function Registro() {
 
     if (nuevasImagenes.length > 0) {
       setErrorMsg(null);
-      // Máximo 2 imágenes según la arquitectura
-      setImagenes((prev) => [...prev, ...nuevasImagenes].slice(0, 2));
+      // MÁXIMO 5 IMÁGENES
+      setImagenes((prev) => [...prev, ...nuevasImagenes].slice(0, 5));
     }
   };
 
@@ -152,8 +152,8 @@ export default function Registro() {
       return;
     }
 
-    if (imagenes.length === 0) {
-      setErrorMsg('Debes adjuntar al menos una imagen de evidencia.');
+   if (imagenes.length < 2) {
+      setErrorMsg('Debes adjuntar al menos 2 imágenes de evidencia (máximo 5).');
       return;
     }
 
@@ -162,7 +162,6 @@ export default function Registro() {
     try {
       const urlsSubidas: string[] = [];
 
-      // 1. Subida al bucket 'evidencias'
       for (let i = 0; i < imagenes.length; i++) {
         const item = imagenes[i];
         const fileExt = item.file.name.split('.').pop();
@@ -174,8 +173,7 @@ export default function Registro() {
           .upload(filePath, item.file);
 
         if (uploadError) {
-          console.error('Error al subir foto:', uploadError);
-          throw new Error(`Error al subir la imagen ${i + 1}: ${uploadError.message}`);
+          throw new Error(`Error al subir imagen ${i + 1}: ${uploadError.message}`);
         }
 
         const { data: publicUrlData } = supabase.storage
@@ -185,7 +183,6 @@ export default function Registro() {
         urlsSubidas.push(publicUrlData.publicUrl);
       }
 
-      // 2. Inserción a la tabla registros_alumnos
       const { error: insertError } = await supabase
         .from('registros_alumnos')
         .insert([
@@ -197,13 +194,15 @@ export default function Registro() {
             grupo: formData.grupo.trim(),
             conferencia: formData.numeroConferencia,
             titulo_evidencia: formData.titulo.trim(),
-            descripcion: formData.descripcion.trim(),
+            descripcion: formData.descripcion.trim() || null, // Opcional
             evidencia_url_1: urlsSubidas[0] || null,
             evidencia_url_2: urlsSubidas[1] || null,
+            evidencia_url_3: urlsSubidas[2] || null,
+            evidencia_url_4: urlsSubidas[3] || null,
+            evidencia_url_5: urlsSubidas[4] || null,
             hora: new Date().toISOString(),
           },
         ]);
-
       if (insertError) {
         console.error('Error al insertar registro:', insertError);
         throw new Error(`Error en base de datos: ${insertError.message}`);
@@ -498,18 +497,17 @@ export default function Registro() {
 
               <div className="sm:col-span-12">
                 <label htmlFor="descripcion" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-                  Descripción / Conclusión de lo aprendido <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  rows={3}
-                  required
-                  placeholder="Describe brevemente los puntos clave de la conferencia o información adicional de tu asistencia..."
-                  value={formData.descripcion}
-                  onChange={handleInputChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-[#1B396A] focus:ring-3 focus:ring-[#1B396A]/15 transition-all resize-y"
-                />
+    Descripción / Conclusión de lo aprendido <span className="text-slate-400 font-normal lowercase">(opcional)</span>
+  </label>
+  <textarea
+    id="descripcion"
+    name="descripcion"
+    rows={3}
+    placeholder="Describe brevemente los puntos clave o conclusiones (opcional)..."
+    value={formData.descripcion}
+    onChange={handleInputChange}
+    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-[#1B396A] focus:ring-3 focus:ring-[#1B396A]/15 transition-all resize-y"
+  />
               </div>
             </div>
           </div>
@@ -524,8 +522,8 @@ export default function Registro() {
                 </h2>
               </div>
               <span className="text-xs font-medium text-slate-500">
-                {imagenes.length} / 2 imágenes
-              </span>
+    {imagenes.length} / 5 imágenes (mínimo 2)
+  </span>
             </div>
 
             <div

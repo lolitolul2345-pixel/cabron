@@ -9,16 +9,18 @@ export interface AlumnoEvidencia {
   carrera: string;
   semestre: string;
   grupo: string;
-  conferencia: string;          // ej. "Conferencia 1", "Conferencia 2", etc.
+  conferencia: string;
   titulo_evidencia: string;
   descripcion: string;
-  evidencia_url_1?: string;     // Foto 1
-  evidencia_url_2?: string;     // Foto 2
+  evidencia_url_1?: string;
+  evidencia_url_2?: string;
+  evidencia_url_3?: string;
+  evidencia_url_4?: string;
+  evidencia_url_5?: string;
   hora: string;
 }
 
 export const AdminPanel: React.FC = () => {
-
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
   const [busqueda, setBusqueda] = useState<string>('');
   const [filtroConferencia, setFiltroConferencia] = useState<string>('todas');
@@ -93,14 +95,12 @@ export const AdminPanel: React.FC = () => {
       '(Asegúrate de haber descargado el reporte en Excel antes de continuar).'
     );
 
-    // Si el usuario cancela, no se llama a Supabase
     if (!confirmacion) return;
 
     try {
       setCargando(true);
       setErrorMsg(null);
 
-      // Eliminar todas las filas en Supabase
       const { error } = await supabase
         .from('registros_alumnos')
         .delete()
@@ -137,7 +137,7 @@ export const AdminPanel: React.FC = () => {
           <div style={estilos.textoEncabezado}>
             <div style={estilos.badge}>TECNM TUXTLA</div>
             <h1 style={estilos.titulo}>CheckPoint — Panel de Conferencias</h1>
-            <p style={estilos.subtitulo}>Supervisión y auditoría de asistencias con doble evidencia fotográfica</p>
+            <p style={estilos.subtitulo}>Supervisión y auditoría de asistencias con evidencias fotográficas</p>
           </div>
 
           {/* Escudo TecNM Tuxtla Gutiérrez */}
@@ -154,8 +154,7 @@ export const AdminPanel: React.FC = () => {
 
       {/* BARRA DE HERRAMIENTAS: REINICIO A LA IZQUIERDA, FILTROS Y EXCEL A LA DERECHA */}
       <section style={estilos.herramientas}>
-        
-        {/* BOTÓN REINICIAR JORNADA (ESQUINA SUPERIOR IZQUIERDA DE LA TABLA) */}
+        {/* BOTÓN REINICIAR JORNADA */}
         <div>
           <button
             type="button"
@@ -187,7 +186,7 @@ export const AdminPanel: React.FC = () => {
           </button>
         </div>
 
-        {/* CONTROLES DERECHA: BÚSQUEDA, FILTRO, ACTUALIZAR Y EXCEL */}
+        {/* CONTROLES DERECHA */}
         <div style={estilos.filtrosDerecha}>
           <input
             type="text"
@@ -197,21 +196,21 @@ export const AdminPanel: React.FC = () => {
             style={estilos.buscador}
           />
 
-<select
-  value={filtroConferencia}
-  onChange={(e) => setFiltroConferencia(e.target.value)}
-  style={estilos.select}
->
-  <option value="todas">Todas las conferencias</option>
-  <option value="Conferencia 1">Conferencia 1</option>
-  <option value="Conferencia 2">Conferencia 2</option>
-  <option value="Conferencia 3">Conferencia 3</option>
-  <option value="Conferencia 4">Conferencia 4</option>
-  <option value="Conferencia 1 PM">Conferencia 1 PM</option>
-  <option value="Conferencia 2 PM">Conferencia 2 PM</option>
-  <option value="Conferencia 3 PM">Conferencia 3 PM</option>
-  <option value="Conferencia 4 PM">Conferencia 4 PM</option>
-</select>
+          <select
+            value={filtroConferencia}
+            onChange={(e) => setFiltroConferencia(e.target.value)}
+            style={estilos.select}
+          >
+            <option value="todas">Todas las conferencias</option>
+            <option value="Conferencia 1">Conferencia 1</option>
+            <option value="Conferencia 2">Conferencia 2</option>
+            <option value="Conferencia 3">Conferencia 3</option>
+            <option value="Conferencia 4">Conferencia 4</option>
+            <option value="Conferencia 1 PM">Conferencia 1 PM</option>
+            <option value="Conferencia 2 PM">Conferencia 2 PM</option>
+            <option value="Conferencia 3 PM">Conferencia 3 PM</option>
+            <option value="Conferencia 4 PM">Conferencia 4 PM</option>
+          </select>
 
           <button onClick={cargarDatos} disabled={cargando} style={estilos.botonRecargar}>
             {cargando ? 'Cargando...' : '🔄 Actualizar'}
@@ -238,7 +237,7 @@ export const AdminPanel: React.FC = () => {
         <table style={estilos.tabla}>
           <thead>
             <tr style={estilos.thFila}>
-              <th style={estilos.th}>Evidencias (Foto 1 y 2)</th>
+              <th style={estilos.th}>Evidencias (Hasta 5 fotos)</th>
               <th style={estilos.th}>Estudiante / Control</th>
               <th style={estilos.th}>Carrera y Semestre</th>
               <th style={estilos.th}>Conferencia</th>
@@ -249,39 +248,35 @@ export const AdminPanel: React.FC = () => {
             {registrosFiltrados.length > 0 ? (
               registrosFiltrados.map((item) => (
                 <tr key={item.id} style={estilos.tdFila}>
+                  {/* Evidencias: Lista dinámica de miniaturas (hasta 5) */}
                   <td style={estilos.td}>
                     <div style={estilos.fotosContenedor}>
-                      {item.evidencia_url_1 ? (
-                        <a href={item.evidencia_url_1} target="_blank" rel="noopener noreferrer">
-                          <img
-                            src={item.evidencia_url_1}
-                            alt="Evidencia 1"
-                            referrerPolicy="no-referrer"
-                            style={estilos.fotoGrande}
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://dummyimage.com/130x130/e2e8f0/4a5568.png&text=Foto+1';
-                            }}
-                          />
-                        </a>
-                      ) : (
-                        <div style={estilos.sinFoto}>Sin Foto 1</div>
-                      )}
-
-                      {item.evidencia_url_2 ? (
-                        <a href={item.evidencia_url_2} target="_blank" rel="noopener noreferrer">
-                          <img
-                            src={item.evidencia_url_2}
-                            alt="Evidencia 2"
-                            referrerPolicy="no-referrer"
-                            style={estilos.fotoGrande}
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://dummyimage.com/130x130/e2e8f0/4a5568.png&text=Foto+2';
-                            }}
-                          />
-                        </a>
-                      ) : (
-                        <div style={estilos.sinFoto}>Sin Foto 2</div>
-                      )}
+                      {[
+                        item.evidencia_url_1,
+                        item.evidencia_url_2,
+                        item.evidencia_url_3,
+                        item.evidencia_url_4,
+                        item.evidencia_url_5
+                      ]
+                        .filter((url): url is string => Boolean(url))
+                        .map((url, index) => (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={url}
+                              alt={`Evidencia ${index + 1}`}
+                              referrerPolicy="no-referrer"
+                              style={estilos.fotoMiniatura}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = `https://dummyimage.com/75x75/e2e8f0/4a5568.png&text=Foto+${index + 1}`;
+                              }}
+                            />
+                          </a>
+                        ))}
                     </div>
                   </td>
 
@@ -303,7 +298,7 @@ export const AdminPanel: React.FC = () => {
 
                   <td style={estilos.td}>
                     <strong>{item.titulo_evidencia || 'Sin título'}</strong>
-                    <p style={estilos.parrafoDesc}>{item.descripcion}</p>
+                    <p style={estilos.parrafoDesc}>{item.descripcion || 'Sin descripción'}</p>
                     <small style={{ color: '#9ca3af' }}>{new Date(item.hora).toLocaleString()}</small>
                   </td>
                 </tr>
@@ -336,32 +331,6 @@ const estilos: { [key: string]: React.CSSProperties } = {
     boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
     fontFamily: 'Segoe UI, -apple-system, sans-serif',
     color: '#333'
-  },
-  barraAccesos: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '10px',
-    marginBottom: '16px'
-  },
-  botonVolver: {
-    backgroundColor: '#f1f5f9',
-    color: '#334155',
-    border: '1px solid #cbd5e1',
-    borderRadius: '8px',
-    padding: '8px 14px',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-  botonCerrarSesion: {
-    backgroundColor: '#dc2626',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '8px 14px',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer'
   },
   header: {
     borderBottom: '2px solid #f3f4f6',
@@ -497,26 +466,19 @@ const estilos: { [key: string]: React.CSSProperties } = {
     fontSize: '13px',
     verticalAlign: 'middle'
   },
-  fotosContenedor: { display: 'flex', gap: '8px' },
-  fotoGrande: {
-    width: '130px',
-    height: '130px',
+  fotosContenedor: {
+    display: 'flex',
+    gap: '6px',
+    flexWrap: 'wrap',
+    maxWidth: '280px'
+  },
+  fotoMiniatura: {
+    width: '64px',
+    height: '64px',
     borderRadius: '8px',
     objectFit: 'cover',
     display: 'block',
     border: '1px solid #cbd5e0'
-  },
-  sinFoto: {
-    width: '130px',
-    height: '130px',
-    borderRadius: '8px',
-    backgroundColor: '#f8fafc',
-    border: '1px dashed #cbd5e0',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '11px',
-    color: '#9ca3af'
   },
   tagControl: {
     display: 'inline-block',
