@@ -69,14 +69,14 @@ export async function exportarTablaExcel(
   headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
   const listaConferencias = [
-    'Conferencia 1',
-    'Conferencia 2',
-    'Conferencia 3',
-    'Conferencia 4',
-    'Conferencia 1 PM',
-    'Conferencia 2 PM',
-    'Conferencia 3 PM',
-    'Conferencia 4 PM',
+    'Conferencia 1 (10:00 - 10:45AM)',
+    'Conferencia 2 (11:00 - 11:45AM)',
+    'Conferencia 3 (13:00 - 13:45PM)',
+    'Conferencia 4 (15:00 - 15:45PM)',
+    'Conferencia 1 (16:00 - 16:45PM)',
+    'Conferencia 2 (17:00 - 17:45PM)',
+    'Conferencia 3 (17:45 - 18:00PM)',
+    'Conferencia 4 (PM)',
   ];
 
   let currentRowIndex = 2;

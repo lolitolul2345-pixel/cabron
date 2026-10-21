@@ -34,14 +34,14 @@ const CARRERAS_TECNM = [
 
 // Opciones con valor completo para coincidir con el Excel agrupado
 const CONFERENCIAS = [
-{ id: 'Conferencia 1', label: 'Conferencia 1 (AM)' },
-  { id: 'Conferencia 2', label: 'Conferencia 2 (AM)' },
-  { id: 'Conferencia 3', label: 'Conferencia 3 (AM)' },
-  { id: 'Conferencia 4', label: 'Conferencia 4 (AM)' },
-  { id: 'Conferencia 1 PM', label: 'Conferencia 1 (PM)' },
-  { id: 'Conferencia 2 PM', label: 'Conferencia 2 (PM)' },
-  { id: 'Conferencia 3 PM', label: 'Conferencia 3 (PM)' },
-  { id: 'Conferencia 4 PM', label: 'Conferencia 4 (PM)' },  
+{ id: 'Conferencia 1 (10:00 - 10:45AM)', label: 'Conferencia 1 (10:00 - 10:45AM)' },
+  { id: 'Conferencia 2 (11:00 - 11:45AM)', label: 'Conferencia 2 (11:00 - 11:45AM)' },
+  { id: 'Conferencia 3 (13:00 - 13:45PM)', label: 'Conferencia 3 (13:00 - 13:45PM)' },
+  { id: 'Conferencia 4 (15:00 - 15:45PM)', label: 'Conferencia 4 (15:00 - 15:45PM)' },
+  { id: 'Conferencia 1 (16:00 - 16:45PM)', label: 'Conferencia 1 (16:00 - 16:45PM)' },
+  { id: 'Conferencia 2 (17:00 - 17:45PM)', label: 'Conferencia 2 (17:00 - 17:45PM)' },
+  { id: 'Conferencia 3 (17:45 - 18:00PM)', label: 'Conferencia 3 (17:45 - 18:00PM)' },
+  { id: 'Conferencia 4 (PM)', label: 'Conferencia 4 (PM)' },  
 ];
 
 const SEMESTRES = ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°+'];

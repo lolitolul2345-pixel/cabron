@@ -107,7 +107,6 @@ export const AdminPanel: React.FC = () => {
         .neq('id', '00000000-0000-0000-0000-000000000000');
 
       if (error) throw error;
-
       setRegistros([]);
       alert('✅ La lista se ha reiniciado exitosamente. La tabla está lista para un nuevo día.');
     } catch (err: any) {
