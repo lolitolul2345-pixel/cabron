@@ -76,7 +76,7 @@ export async function exportarTablaExcel(
     'Conferencia 1 (16:00 - 16:45PM)',
     'Conferencia 2 (17:00 - 17:45PM)',
     'Conferencia 3 (17:45 - 18:00PM)',
-    'Conferencia 4 (12:00PM)',
+    'Conferencia 4 (12:00 - 12:45PM)',
   ];
 
   let currentRowIndex = 2;
