@@ -15,7 +15,7 @@ interface EvidenceFormData {
 }
 
 interface PreviewImage {
-  file: File;
+  file?: File;
   previewUrl: string;
 }
 
@@ -34,7 +34,7 @@ const CARRERAS_TECNM = [
 
 // Opciones con valor completo para coincidir con el Excel agrupado
 const CONFERENCIAS = [
-{ id: 'Conferencia 1 (10:00 - 10:45AM)', label: 'Conferencia 1 (10:00 - 10:45AM)' },
+  { id: 'Conferencia 1 (10:00 - 10:45AM)', label: 'Conferencia 1 (10:00 - 10:45AM)' },
   { id: 'Conferencia 2 (11:00 - 11:45AM)', label: 'Conferencia 2 (11:00 - 11:45AM)' },
   { id: 'Conferencia 3 (13:00 - 13:45PM)', label: 'Conferencia 3 (13:00 - 13:45PM)' },
   { id: 'Conferencia 4 (15:00 - 15:45PM)', label: 'Conferencia 4 (15:00 - 15:45PM)' },
@@ -67,9 +67,16 @@ export default function Registro() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Estados para búsqueda y edición de registro
+  const [modoEdicion, setModoEdicion] = useState<boolean>(false);
+  const [idRegistroEdicion, setIdRegistroEdicion] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
   useEffect(() => {
     return () => {
-      imagenes.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+      imagenes.forEach((img) => {
+        if (img.file) URL.revokeObjectURL(img.previewUrl);
+      });
     };
   }, [imagenes]);
 
@@ -84,7 +91,7 @@ export default function Registro() {
     setErrorMsg(null);
   };
 
- const processFiles = (files: FileList | null) => {
+  const processFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -108,7 +115,6 @@ export default function Registro() {
 
     if (nuevasImagenes.length > 0) {
       setErrorMsg(null);
-      // MÁXIMO 5 IMÁGENES
       setImagenes((prev) => [...prev, ...nuevasImagenes].slice(0, 5));
     }
   };
@@ -137,8 +143,84 @@ export default function Registro() {
   const removeImage = (indexToRemove: number) => {
     setImagenes((prev) => {
       const target = prev[indexToRemove];
-      if (target) URL.revokeObjectURL(target.previewUrl);
+      if (target && target.file) URL.revokeObjectURL(target.previewUrl);
       return prev.filter((_, idx) => idx !== indexToRemove);
+    });
+  };
+
+  // Buscar un registro previamente guardado para corregir datos
+  const handleBuscarParaEditar = async () => {
+    if (!formData.numeroControl.trim() || !formData.numeroConferencia) {
+      setErrorMsg('Ingresa tu número de control y selecciona la conferencia para buscar tu registro.');
+      return;
+    }
+
+    setIsSearching(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    try {
+      const { data, error } = await supabase
+        .from('registros_alumnos')
+        .select('*')
+        .eq('num_control', formData.numeroControl.trim().toUpperCase())
+        .eq('conferencia', formData.numeroConferencia)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        setErrorMsg(`No se encontró registro para el N° de Control "${formData.numeroControl.trim()}" en la conferencia seleccionada.`);
+        return;
+      }
+
+      setFormData({
+        numeroControl: data.num_control || '',
+        nombreAlumno: data.nombre || '',
+        semestre: data.semestre || '',
+        grupo: data.grupo || '',
+        carrera: data.carrera || '',
+        numeroConferencia: data.conferencia || '',
+        titulo: data.titulo_evidencia || '',
+        descripcion: data.descripcion || '',
+      });
+
+      const fotosGuardadas: PreviewImage[] = [
+        data.evidencia_url_1,
+        data.evidencia_url_2,
+        data.evidencia_url_3,
+        data.evidencia_url_4,
+        data.evidencia_url_5,
+      ]
+        .filter((url): url is string => Boolean(url))
+        .map((url) => ({ previewUrl: url }));
+
+      setImagenes(fotosGuardadas);
+      setIdRegistroEdicion(data.id);
+      setModoEdicion(true);
+      setSuccessMsg('✅ Registro encontrado. Modifica los campos que necesites y pulsa "Guardar Cambios".');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Error al buscar tu registro.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const cancelarEdicion = () => {
+    setModoEdicion(false);
+    setIdRegistroEdicion(null);
+    setImagenes([]);
+    setSuccessMsg(null);
+    setErrorMsg(null);
+    setFormData({
+      numeroControl: '',
+      nombreAlumno: '',
+      semestre: '',
+      grupo: '',
+      carrera: '',
+      numeroConferencia: '',
+      titulo: '',
+      descripcion: '',
     });
   };
 
@@ -152,7 +234,7 @@ export default function Registro() {
       return;
     }
 
-   if (imagenes.length < 2) {
+    if (imagenes.length < 2) {
       setErrorMsg('Debes adjuntar al menos 2 imágenes de evidencia (máximo 5).');
       return;
     }
@@ -164,29 +246,34 @@ export default function Registro() {
 
       for (let i = 0; i < imagenes.length; i++) {
         const item = imagenes[i];
-        const fileExt = item.file.name.split('.').pop();
-        const cleanControl = formData.numeroControl.replace(/[^a-zA-Z0-9]/g, '');
-        const filePath = `${cleanControl}_${Date.now()}_${i + 1}.${fileExt}`;
+        if (item.file) {
+          const fileExt = item.file.name.split('.').pop();
+          const cleanControl = formData.numeroControl.replace(/[^a-zA-Z0-9]/g, '');
+          const filePath = `${cleanControl}_${Date.now()}_${i + 1}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('evidencias')
-          .upload(filePath, item.file);
+          const { error: uploadError } = await supabase.storage
+            .from('evidencias')
+            .upload(filePath, item.file);
 
-        if (uploadError) {
-          throw new Error(`Error al subir imagen ${i + 1}: ${uploadError.message}`);
+          if (uploadError) {
+            throw new Error(`Error al subir imagen ${i + 1}: ${uploadError.message}`);
+          }
+
+          const { data: publicUrlData } = supabase.storage
+            .from('evidencias')
+            .getPublicUrl(filePath);
+
+          urlsSubidas.push(publicUrlData.publicUrl);
+        } else {
+          urlsSubidas.push(item.previewUrl);
         }
-
-        const { data: publicUrlData } = supabase.storage
-          .from('evidencias')
-          .getPublicUrl(filePath);
-
-        urlsSubidas.push(publicUrlData.publicUrl);
       }
 
-      const { error: insertError } = await supabase
-        .from('registros_alumnos')
-        .insert([
-          {
+      if (modoEdicion && idRegistroEdicion) {
+        // MODO EDICIÓN
+        const { error: updateError } = await supabase
+          .from('registros_alumnos')
+          .update({
             num_control: formData.numeroControl.trim(),
             nombre: formData.nombreAlumno.trim(),
             carrera: formData.carrera,
@@ -194,24 +281,55 @@ export default function Registro() {
             grupo: formData.grupo.trim(),
             conferencia: formData.numeroConferencia,
             titulo_evidencia: formData.titulo.trim(),
-            descripcion: formData.descripcion.trim() || null, // Opcional
+            descripcion: formData.descripcion.trim() || null,
             evidencia_url_1: urlsSubidas[0] || null,
             evidencia_url_2: urlsSubidas[1] || null,
             evidencia_url_3: urlsSubidas[2] || null,
             evidencia_url_4: urlsSubidas[3] || null,
             evidencia_url_5: urlsSubidas[4] || null,
-            hora: new Date().toISOString(),
-          },
-        ]);
-      if (insertError) {
-        console.error('Error al insertar registro:', insertError);
-        throw new Error(`Error en base de datos: ${insertError.message}`);
+          })
+          .eq('id', idRegistroEdicion);
+
+        if (updateError) throw updateError;
+
+        setSuccessMsg('¡Tu registro de asistencia ha sido actualizado exitosamente!');
+        setModoEdicion(false);
+        setIdRegistroEdicion(null);
+      } else {
+        // NUEVO REGISTRO
+        const { error: insertError } = await supabase
+          .from('registros_alumnos')
+          .insert([
+            {
+              num_control: formData.numeroControl.trim(),
+              nombre: formData.nombreAlumno.trim(),
+              carrera: formData.carrera,
+              semestre: formData.semestre,
+              grupo: formData.grupo.trim(),
+              conferencia: formData.numeroConferencia,
+              titulo_evidencia: formData.titulo.trim(),
+              descripcion: formData.descripcion.trim() || null,
+              evidencia_url_1: urlsSubidas[0] || null,
+              evidencia_url_2: urlsSubidas[1] || null,
+              evidencia_url_3: urlsSubidas[2] || null,
+              evidencia_url_4: urlsSubidas[3] || null,
+              evidencia_url_5: urlsSubidas[4] || null,
+              hora: new Date().toISOString(),
+            },
+          ]);
+
+        if (insertError) {
+          console.error('Error al insertar registro:', insertError);
+          throw new Error(`Error en base de datos: ${insertError.message}`);
+        }
+
+        setSuccessMsg('¡Evidencia registrada exitosamente en CheckPoint!');
       }
 
-      setSuccessMsg('¡Evidencia registrada exitosamente en CheckPoint!');
-      
-      // Limpiar formulario tras éxito
-      imagenes.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+      // Limpiar formulario
+      imagenes.forEach((img) => {
+        if (img.file) URL.revokeObjectURL(img.previewUrl);
+      });
       setImagenes([]);
       setFormData({
         numeroControl: '',
@@ -224,7 +342,7 @@ export default function Registro() {
         descripcion: '',
       });
     } catch (err: any) {
-      setErrorMsg(err.message || 'Ocurrió un error al registrar tu evidencia.');
+      setErrorMsg(err.message || 'Ocurrió un error al procesar tu registro.');
     } finally {
       setIsSubmitting(false);
     }
@@ -233,7 +351,7 @@ export default function Registro() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       
-  {/* BARRA SUPERIOR INSTITUCIONAL (TecNM Azul Marino #1B396A) */}
+      {/* BARRA SUPERIOR INSTITUCIONAL (TecNM Azul Marino #1B396A) */}
       <header className="bg-[#1B396A] text-white shadow-md border-b-4 border-amber-500 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           
@@ -274,11 +392,42 @@ export default function Registro() {
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1B396A] tracking-tight">
-            Registro de Evidencia de Conferencias
+            {modoEdicion ? 'Corregir Evidencia de Conferencia' : 'Registro de Evidencia de Conferencias'}
           </h1>
           <p className="mt-1.5 text-sm sm:text-base text-slate-600">
-            Completa tus datos académicos, selecciona la conferencia correspondiente y adjunta tu evidencia fotográfica de participación.
+            {modoEdicion
+              ? 'Estás en modo edición. Haz los cambios necesarios y presiona "Guardar Cambios".'
+              : 'Completa tus datos académicos, selecciona la conferencia correspondiente y adjunta tu evidencia fotográfica de participación.'}
           </p>
+        </div>
+
+        {/* BANNER DE BÚSQUEDA PARA EDITAR REGISTROS PREVIOS */}
+        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+          <div>
+            <span className="text-sm font-bold text-[#1B396A]">¿Te equivocaste en un registro enviado previamente?</span>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Ingresa tu N° de Control, selecciona la conferencia abajo y haz clic en buscar para modificarlo.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+            <button
+              type="button"
+              onClick={handleBuscarParaEditar}
+              disabled={isSearching}
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-900 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isSearching ? 'Buscando...' : '🔍 Buscar para Editar'}
+            </button>
+            {modoEdicion && (
+              <button
+                type="button"
+                onClick={cancelarEdicion}
+                className="px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </div>
 
         {errorMsg && (
@@ -305,7 +454,6 @@ export default function Registro() {
         >
           {/* ZONA BLANCA INSTITUCIONAL CON AMBOS LOGOTIPOS */}
           <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white">
-            {/* Logo TecNM Izquierda */}
             <img
               src="/photos/Logo-TecNM.png"
               alt="Logo TecNM"
@@ -315,7 +463,6 @@ export default function Registro() {
               }}
             />
 
-            {/* Texto central institucional */}
             <div className="text-center flex-1">
               <span className="inline-block text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full mb-1.5">
                 TecNM Campus Tuxtla Gutiérrez
@@ -328,7 +475,6 @@ export default function Registro() {
               </p>
             </div>
 
-            {/* Escudo TecNM Tuxtla Derecha */}
             <img
               src="/photos/tux.png"
               alt="Logo TecNM Tuxtla Gutiérrez"
@@ -338,6 +484,7 @@ export default function Registro() {
               }}
             />
           </div>
+
           {/* SECCIÓN 1: DATOS ACADÉMICOS */}
           <div className="p-6 sm:p-8 border-b border-slate-100">
             <div className="flex items-center gap-2.5 mb-6">
@@ -497,22 +644,22 @@ export default function Registro() {
 
               <div className="sm:col-span-12">
                 <label htmlFor="descripcion" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-    Descripción / Conclusión de lo aprendido <span className="text-slate-400 font-normal lowercase">(opcional)</span>
-  </label>
-  <textarea
-    id="descripcion"
-    name="descripcion"
-    rows={3}
-    placeholder="Describe brevemente los puntos clave o conclusiones (opcional)..."
-    value={formData.descripcion}
-    onChange={handleInputChange}
-    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-[#1B396A] focus:ring-3 focus:ring-[#1B396A]/15 transition-all resize-y"
-  />
+                  Descripción / Conclusión de lo aprendido <span className="text-slate-400 font-normal lowercase">(opcional)</span>
+                </label>
+                <textarea
+                  id="descripcion"
+                  name="descripcion"
+                  rows={3}
+                  placeholder="Describe brevemente los puntos clave o conclusiones (opcional)..."
+                  value={formData.descripcion}
+                  onChange={handleInputChange}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-[#1B396A] focus:ring-3 focus:ring-[#1B396A]/15 transition-all resize-y"
+                />
               </div>
             </div>
           </div>
 
-          {/* SECCIÓN 3: SUBIR FOTOS (HASTA 2) */}
+          {/* SECCIÓN 3: SUBIR FOTOS */}
           <div className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
@@ -522,8 +669,8 @@ export default function Registro() {
                 </h2>
               </div>
               <span className="text-xs font-medium text-slate-500">
-    {imagenes.length} / 5 imágenes (mínimo 2)
-  </span>
+                {imagenes.length} / 5 imágenes (mínimo 2)
+              </span>
             </div>
 
             <div
@@ -597,7 +744,7 @@ export default function Registro() {
                       </button>
                     </div>
                     <span className="absolute bottom-2 left-2 bg-slate-900/75 text-white text-[11px] font-medium px-2 py-0.5 rounded-md truncate max-w-[85%]">
-                      {item.file.name}
+                      {item.file ? item.file.name : `Foto actual ${idx + 1}`}
                     </span>
                   </div>
                 ))}
@@ -608,7 +755,11 @@ export default function Registro() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto min-w-[220px] py-3.5 px-6 rounded-xl bg-[#1B396A] hover:bg-[#152d54] active:bg-[#102240] disabled:bg-slate-300 disabled:text-slate-500 text-white font-semibold text-sm shadow-md shadow-[#1B396A]/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className={`w-full sm:w-auto min-w-[220px] py-3.5 px-6 rounded-xl text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  modoEdicion
+                    ? 'bg-amber-600 hover:bg-amber-700 active:bg-amber-800 shadow-amber-600/20'
+                    : 'bg-[#1B396A] hover:bg-[#152d54] active:bg-[#102240] shadow-[#1B396A]/20'
+                } disabled:bg-slate-300 disabled:text-slate-500`}
               >
                 {isSubmitting ? (
                   <>
@@ -616,8 +767,10 @@ export default function Registro() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    <span>Enviando evidencia...</span>
+                    <span>{modoEdicion ? 'Actualizando...' : 'Enviando evidencia...'}</span>
                   </>
+                ) : modoEdicion ? (
+                  'Guardar Cambios en Evidencia'
                 ) : (
                   'Registrar Evidencia'
                 )}
