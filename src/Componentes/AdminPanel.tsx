@@ -20,7 +20,6 @@ export interface AlumnoEvidencia {
   hora: string;
 }
 
-// Mapa para mostrar los nombres con horarios en la tabla
 const TITULOS_CONFERENCIAS: { [key: string]: string } = {
   'Conferencia 1': 'Conferencia 1 (10:00 - 10:45AM)',
   'Conferencia 2': 'Conferencia 2 (11:00 - 11:45AM)',
@@ -52,9 +51,10 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
       setRegistros((data as AlumnoEvidencia[]) || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
       console.error('Error al cargar datos:', err);
-      setErrorMsg(err.message || 'Error al conectar con la base de datos.');
+      setErrorMsg(mensaje);
       setRegistros([]);
     } finally {
       setCargando(false);
@@ -65,7 +65,6 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
-  // FILTRADO DE REGISTROS
   const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
@@ -73,9 +72,21 @@ export const AdminPanel: React.FC = () => {
       reg.num_control.toLowerCase().includes(query) ||
       (reg.carrera && reg.carrera.toLowerCase().includes(query));
 
-    // Compara el id exacto guardado en Supabase (ej: "Conferencia 3")
-    const coincideConf =
-      filtroConferencia === 'todas' || reg.conferencia === filtroConferencia;
+    let coincideConf = false;
+    if (filtroConferencia === 'todas') {
+      coincideConf = true;
+    } else {
+      const valorRegistro = (reg.conferencia || '').toLowerCase().trim();
+      const valorFiltro = filtroConferencia.toLowerCase().trim();
+
+      const confLimpiaRegistro = valorRegistro.split('(')[0].trim();
+      const confLimpiaFiltro = valorFiltro.split('(')[0].trim();
+
+      coincideConf =
+        valorRegistro === valorFiltro ||
+        confLimpiaRegistro === confLimpiaFiltro ||
+        valorRegistro.includes(confLimpiaFiltro);
+    }
 
     return coincideTexto && coincideConf;
   });
@@ -114,9 +125,10 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
       setRegistros((prev) => prev.filter((r) => r.id !== id));
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Error desconocido';
       console.error('Error al eliminar fila:', err);
-      alert(`No se pudo eliminar el registro: ${err.message}`);
+      alert(`No se pudo eliminar el registro: ${mensaje}`);
     }
   };
 
@@ -140,9 +152,10 @@ export const AdminPanel: React.FC = () => {
 
       setRegistros([]);
       alert('✅ La lista se ha reiniciado exitosamente.');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Error al intentar vaciar la base de datos.';
       console.error('Error al vaciar registros:', err);
-      setErrorMsg(err.message || 'Error al intentar vaciar la base de datos.');
+      setErrorMsg(mensaje);
     } finally {
       setCargando(false);
     }
@@ -197,7 +210,6 @@ export const AdminPanel: React.FC = () => {
             style={estilos.buscador}
           />
 
-          {/* SELECTOR CORREGIDO: VALUE CORTO, TEXTO LARGO */}
           <select
             value={filtroConferencia}
             onChange={(e) => setFiltroConferencia(e.target.value)}
@@ -339,7 +351,7 @@ const estilos: { [key: string]: React.CSSProperties } = {
     borderRadius: '16px',
     boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
     fontFamily: 'Segoe UI, -apple-system, sans-serif',
-    color: '#333'
+    color: '#333',
   },
   header: { borderBottom: '2px solid #f3f4f6', paddingBottom: '16px', marginBottom: '20px' },
   logosContenedor: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' },
@@ -380,5 +392,5 @@ const estilos: { [key: string]: React.CSSProperties } = {
     transition: 'background-color 0.2s',
   },
   sinResultados: { textAlign: 'center', padding: '30px', color: '#a0aec0', fontSize: '15px' },
-  footer: { marginTop: '16px', fontSize: '13px', color: '#718096', textAlign: 'right' }
+  footer: { marginTop: '16px', fontSize: '13px', color: '#718096', textAlign: 'right' },
 };
