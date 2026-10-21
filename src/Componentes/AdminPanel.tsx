@@ -188,15 +188,15 @@ export const AdminPanel: React.FC = () => {
             onChange={(e) => setFiltroConferencia(e.target.value)}
             style={estilos.select}
           >
-            <option value="todas">Todas las conferencias</option>
-            <option value="Conferencia 1">Conferencia 1</option>
-            <option value="Conferencia 2">Conferencia 2</option>
-            <option value="Conferencia 3">Conferencia 3</option>
-            <option value="Conferencia 4">Conferencia 4</option>
-            <option value="Conferencia 1 PM">Conferencia 1 PM</option>
-            <option value="Conferencia 2 PM">Conferencia 2 PM</option>
-            <option value="Conferencia 3 PM">Conferencia 3 PM</option>
-            <option value="Conferencia 4 PM">Conferencia 4 PM</option>
+<option value="todas">Todas las conferencias</option>
+  <option value="Conferencia 1">Conferencia 1 (10:00 - 10:45AM)</option>
+  <option value="Conferencia 2">Conferencia 2 (11:00 - 11:45AM)</option>
+  <option value="Conferencia 3">Conferencia 3 (13:00 - 13:45PM)</option>
+  <option value="Conferencia 4">Conferencia 4 (15:00 - 15:45PM)</option>
+  <option value="Conferencia 1 PM">Conferencia 1 (16:00 - 16:45PM)</option>
+  <option value="Conferencia 2 PM">Conferencia 2 (17:00 - 17:45PM)</option>
+  <option value="Conferencia 3 PM">Conferencia 3 (17:45 - 18:00PM)</option>
+  <option value="Conferencia 4 PM">Conferencia 4 (12:00 - 12:45PM)</option>
           </select>
 
           <button onClick={cargarDatos} disabled={cargando} style={estilos.botonRecargar}>
