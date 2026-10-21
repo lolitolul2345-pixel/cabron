@@ -20,17 +20,6 @@ export interface AlumnoEvidencia {
   hora: string;
 }
 
-const TITULOS_CONFERENCIAS: { [key: string]: string } = {
-  'Conferencia 1': 'Conferencia 1 (10:00 - 10:45AM)',
-  'Conferencia 2': 'Conferencia 2 (11:00 - 11:45AM)',
-  'Conferencia 3': 'Conferencia 3 (13:00 - 13:45PM)',
-  'Conferencia 4': 'Conferencia 4 (15:00 - 15:45PM)',
-  'Conferencia 1 PM': 'Conferencia 1 (16:00 - 16:45PM)',
-  'Conferencia 2 PM': 'Conferencia 2 (17:00 - 17:45PM)',
-  'Conferencia 3 PM': 'Conferencia 3 (17:45 - 18:00PM)',
-  'Conferencia 4 PM': 'Conferencia 4 (12:00 - 12:45PM)',
-};
-
 export const AdminPanel: React.FC = () => {
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
   const [busqueda, setBusqueda] = useState<string>('');
@@ -65,7 +54,8 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
-const registrosFiltrados = registros.filter((reg) => {
+  // Filtro limpio y exacto para evitar mezclar conferencias
+  const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
       reg.nombre.toLowerCase().includes(query) ||
@@ -76,30 +66,14 @@ const registrosFiltrados = registros.filter((reg) => {
     if (filtroConferencia === 'todas') {
       coincideConf = true;
     } else {
-      const valorRegistro = (reg.conferencia || '').toLowerCase().trim();
-      const valorFiltro = filtroConferencia.toLowerCase().trim();
+      const confReg = (reg.conferencia || '').toLowerCase().trim();
+      const confFiltro = filtroConferencia.toLowerCase().trim();
 
-      // Normalización exacta que preserva la distinción entre AM y PM
-      const esPMFiltro = valorFiltro.includes('pm') || valorFiltro.includes('12:00');
-      const esPMRegistro = valorRegistro.includes('pm') || valorRegistro.includes('12:00');
+      // Compara directamente o extrayendo el ID base antes del paréntesis si lo trae
+      const baseReg = confReg.split('(')[0].trim();
+      const baseFiltro = confFiltro.split('(')[0].trim();
 
-      // Si el filtro busca la versión PM (12:00 PM), exige que el registro también lo sea
-      if (valorFiltro.includes('conferencia 4')) {
-        if (esPMFiltro) {
-          coincideConf = esPMRegistro;
-        } else {
-          coincideConf = !esPMRegistro;
-        }
-      } else {
-        // Para las demás conferencias mantiene coincidencia limpia
-        const confLimpiaRegistro = valorRegistro.split('(')[0].trim();
-        const confLimpiaFiltro = valorFiltro.split('(')[0].trim();
-
-        coincideConf =
-          valorRegistro === valorFiltro ||
-          confLimpiaRegistro === confLimpiaFiltro ||
-          valorRegistro.includes(confLimpiaFiltro);
-      }
+      coincideConf = (confReg === confFiltro) || (baseReg === baseFiltro);
     }
 
     return coincideTexto && coincideConf;
@@ -230,14 +204,14 @@ const registrosFiltrados = registros.filter((reg) => {
             style={estilos.select}
           >
             <option value="todas">Todas las conferencias</option>
-            <option value="Conferencia 1">Conferencia 1 (10:00 - 10:45AM)</option>
-            <option value="Conferencia 2">Conferencia 2 (11:00 - 11:45AM)</option>
-            <option value="Conferencia 3">Conferencia 3 (13:00 - 13:45PM)</option>
-            <option value="Conferencia 4">Conferencia 4 (15:00 - 15:45PM)</option>
-            <option value="Conferencia 1 PM">Conferencia 1 (16:00 - 16:45PM)</option>
-            <option value="Conferencia 2 PM">Conferencia 2 (17:00 - 17:45PM)</option>
-            <option value="Conferencia 3 PM">Conferencia 3 (17:45 - 18:00PM)</option>
-            <option value="Conferencia 4 PM">Conferencia 4 (12:00 - 12:45PM)</option>
+            <option value="Conferencia 1">Conferencia 1</option>
+            <option value="Conferencia 2">Conferencia 2</option>
+            <option value="Conferencia 3">Conferencia 3</option>
+            <option value="Conferencia 4">Conferencia 4</option>
+            <option value="Conferencia 1 PM">Conferencia 1 PM</option>
+            <option value="Conferencia 2 PM">Conferencia 2 PM</option>
+            <option value="Conferencia 3 PM">Conferencia 3 PM</option>
+            <option value="Conferencia 4 PM">Conferencia 4 PM</option>
           </select>
 
           <button onClick={cargarDatos} disabled={cargando} style={estilos.botonRecargar}>
@@ -250,7 +224,7 @@ const registrosFiltrados = registros.filter((reg) => {
             style={{
               ...estilos.botonExcel,
               backgroundColor: registrosFiltrados.length === 0 ? '#94a3b8' : '#107c41',
-              cursor: registrosFiltrados.length === 0 ? 'not-allowed' : 'pointer'
+              cursor: registrosFiltrados.length === 0 ? 'not-allowed' : 'pointer',
             }}
           >
             {descargandoExcel ? '⏳ Generando...' : '📊 Exportar XLSX'}
@@ -283,7 +257,7 @@ const registrosFiltrados = registros.filter((reg) => {
                         item.evidencia_url_2,
                         item.evidencia_url_3,
                         item.evidencia_url_4,
-                        item.evidencia_url_5
+                        item.evidencia_url_5,
                       ]
                         .filter((url): url is string => Boolean(url))
                         .map((url, index) => (
@@ -314,10 +288,9 @@ const registrosFiltrados = registros.filter((reg) => {
                     </small>
                   </td>
 
+                  {/* Etiqueta limpia que muestra exactamente el valor registrado */}
                   <td style={estilos.td}>
-                    <span style={estilos.badgeConf}>
-                      {TITULOS_CONFERENCIAS[item.conferencia] || item.conferencia}
-                    </span>
+                    <span style={estilos.badgeConf}>{item.conferencia}</span>
                   </td>
 
                   <td style={estilos.td}>
