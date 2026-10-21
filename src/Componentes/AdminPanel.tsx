@@ -20,6 +20,7 @@ export interface AlumnoEvidencia {
   hora: string;
 }
 
+// Mapa para mostrar los nombres con horarios en la tabla
 const TITULOS_CONFERENCIAS: { [key: string]: string } = {
   'Conferencia 1': 'Conferencia 1 (10:00 - 10:45AM)',
   'Conferencia 2': 'Conferencia 2 (11:00 - 11:45AM)',
@@ -51,10 +52,9 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
       setRegistros((data as AlumnoEvidencia[]) || []);
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
+    } catch (err: any) {
       console.error('Error al cargar datos:', err);
-      setErrorMsg(mensaje);
+      setErrorMsg(err.message || 'Error al conectar con la base de datos.');
       setRegistros([]);
     } finally {
       setCargando(false);
@@ -65,7 +65,7 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
-  // FILTRADO FLEXIBLE QUE COINCIDE NOMBRES CORTOS Y LARGOS
+  // FILTRADO DE REGISTROS
   const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
@@ -73,21 +73,9 @@ export const AdminPanel: React.FC = () => {
       reg.num_control.toLowerCase().includes(query) ||
       (reg.carrera && reg.carrera.toLowerCase().includes(query));
 
-    let coincideConf = false;
-    if (filtroConferencia === 'todas') {
-      coincideConf = true;
-    } else {
-      const valorRegistro = (reg.conferencia || '').toLowerCase().trim();
-      const valorFiltro = filtroConferencia.toLowerCase().trim();
-
-      const confLimpiaRegistro = valorRegistro.split('(')[0].trim();
-      const confLimpiaFiltro = valorFiltro.split('(')[0].trim();
-
-      coincideConf =
-        valorRegistro === valorFiltro ||
-        confLimpiaRegistro === confLimpiaFiltro ||
-        valorRegistro.includes(confLimpiaFiltro);
-    }
+    // Compara el id exacto guardado en Supabase (ej: "Conferencia 3")
+    const coincideConf =
+      filtroConferencia === 'todas' || reg.conferencia === filtroConferencia;
 
     return coincideTexto && coincideConf;
   });
@@ -126,10 +114,9 @@ export const AdminPanel: React.FC = () => {
 
       if (error) throw error;
       setRegistros((prev) => prev.filter((r) => r.id !== id));
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error desconocido';
+    } catch (err: any) {
       console.error('Error al eliminar fila:', err);
-      alert(`No se pudo eliminar el registro: ${mensaje}`);
+      alert(`No se pudo eliminar el registro: ${err.message}`);
     }
   };
 
@@ -153,10 +140,9 @@ export const AdminPanel: React.FC = () => {
 
       setRegistros([]);
       alert('✅ La lista se ha reiniciado exitosamente.');
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error al intentar vaciar la base de datos.';
+    } catch (err: any) {
       console.error('Error al vaciar registros:', err);
-      setErrorMsg(mensaje);
+      setErrorMsg(err.message || 'Error al intentar vaciar la base de datos.');
     } finally {
       setCargando(false);
     }
@@ -211,6 +197,7 @@ export const AdminPanel: React.FC = () => {
             style={estilos.buscador}
           />
 
+          {/* SELECTOR CORREGIDO: VALUE CORTO, TEXTO LARGO */}
           <select
             value={filtroConferencia}
             onChange={(e) => setFiltroConferencia(e.target.value)}
@@ -368,7 +355,7 @@ const estilos: { [key: string]: React.CSSProperties } = {
   buscador: { minWidth: '220px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e0', fontSize: '13px', outline: 'none' },
   select: { padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e0', fontSize: '13px', backgroundColor: '#f8fafc', outline: 'none', cursor: 'pointer' },
   botonRecargar: { backgroundColor: '#1b365d', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '9px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '13px' },
-  botonExcel: { color: '#ffffff', border: 'none', borderRadius: '8px', padding: '9px 14px', fontWeight 600, fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' },
+  botonExcel: { color: '#ffffff', border: 'none', borderRadius: '8px', padding: '9px 14px', fontWeight: 600, fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' },
   error: { padding: '10px 14px', backgroundColor: '#fed7d7', color: '#c53030', borderRadius: '8px', marginBottom: '16px' },
   tablaWrapper: { overflowX: 'auto', borderRadius: '8px', border: '1px solid #e2e8f0' },
   tabla: { width: '100%', borderCollapse: 'collapse', textAlign: 'left' },
