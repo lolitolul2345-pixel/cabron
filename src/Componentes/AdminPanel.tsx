@@ -21,17 +21,19 @@ export interface AlumnoEvidencia {
 }
 
 // Opciones del filtro con id exacto y horario visible
+// 1. Opciones del selector con el valor exacto y horarios
 const OPCIONES_FILTRO = [
   { id: 'todas', label: 'Todas las conferencias' },
-  { id: 'Conferencia 1', label: 'Conferencia 1 (10:00 - 10:45 AM)' },
-  { id: 'Conferencia 2', label: 'Conferencia 2 (11:00 - 11:45 AM)' },
-  { id: 'Conferencia 3', label: 'Conferencia 3 (13:00 - 13:45 PM)' },
-  { id: 'Conferencia 4', label: 'Conferencia 4 (15:00 - 15:45 PM)' },
-  { id: 'Conferencia 1 PM', label: 'Conferencia 1 PM (16:00 - 16:45 PM)' },
-  { id: 'Conferencia 2 PM', label: 'Conferencia 2 PM (17:00 - 17:45 PM)' },
-  { id: 'Conferencia 3 PM', label: 'Conferencia 3 PM (17:45 - 18:00 PM)' },
-  { id: 'Conferencia 4 PM', label: 'Conferencia 4 PM (12:00 - 12:45 PM)' },
+  { id: '10:00', label: 'Conferencia 1 (10:00 - 10:45 AM)' },
+  { id: '11:00', label: 'Conferencia 2 (11:00 - 11:45 AM)' },
+  { id: '13:00', label: 'Conferencia 3 (13:00 - 13:45 PM)' },
+  { id: '15:00', label: 'Conferencia 4 (15:00 - 15:45 PM)' },
+  { id: '16:00', label: 'Conferencia 1 PM (16:00 - 16:45 PM)' },
+  { id: '17:00', label: 'Conferencia 2 PM (17:00 - 17:45 PM)' },
+  { id: '17:45', label: 'Conferencia 3 PM (17:45 - 18:00 PM)' },
+  { id: '12:00', label: 'Conferencia 4 PM (12:00 - 12:45 PM)' },
 ];
+
 
 export const AdminPanel: React.FC = () => {
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
@@ -68,30 +70,27 @@ export const AdminPanel: React.FC = () => {
   }, []);
 
   // Filtrado robusto que distingue limpiamente AM de PM y horarios completos
-  const registrosFiltrados = registros.filter((reg) => {
-    const query = busqueda.toLowerCase().trim();
-    const coincideTexto =
-      reg.nombre.toLowerCase().includes(query) ||
-      reg.num_control.toLowerCase().includes(query) ||
-      (reg.carrera && reg.carrera.toLowerCase().includes(query));
+  // 2. Lógica de filtrado infalible
+const registrosFiltrados = registros.filter((reg) => {
+  const query = busqueda.toLowerCase().trim();
+  const coincideTexto =
+    reg.nombre.toLowerCase().includes(query) ||
+    reg.num_control.toLowerCase().includes(query) ||
+    (reg.carrera && reg.carrera.toLowerCase().includes(query));
 
-    let coincideConf = false;
-    if (filtroConferencia === 'todas') {
-      coincideConf = true;
-    } else {
-      const confReg = (reg.conferencia || '').toLowerCase().trim();
-      const confFiltro = filtroConferencia.toLowerCase().trim();
+  let coincideConf = false;
+  if (filtroConferencia === 'todas') {
+    coincideConf = true;
+  } else {
+    const confReg = (reg.conferencia || '').toLowerCase();
+    
+    // Filtra directamente por la hora inicial única (10:00, 15:00, 12:00, etc.)
+    coincideConf = confReg.includes(filtroConferencia);
+  }
 
-      // Limpia textos entre paréntesis por si algún registro guardó horarios en la BD
-      const baseReg = confReg.split('(')[0].trim();
-      const baseFiltro = confFiltro.split('(')[0].trim();
-
-      // Coincidencia estricta de ID base para que Conferencia 4 no tome Conferencia 4 PM
-      coincideConf = confReg === confFiltro || baseReg === baseFiltro;
-    }
-
-    return coincideTexto && coincideConf;
-  });
+  return coincideTexto && coincideConf;
+});
+  
 
   const handleDescargarExcel = async () => {
     if (registrosFiltrados.length === 0) {
