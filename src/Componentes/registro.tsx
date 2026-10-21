@@ -41,7 +41,7 @@ const CONFERENCIAS = [
   { id: 'Conferencia 1 (16:00 - 16:45PM)', label: 'Conferencia 1 (16:00 - 16:45PM)' },
   { id: 'Conferencia 2 (17:00 - 17:45PM)', label: 'Conferencia 2 (17:00 - 17:45PM)' },
   { id: 'Conferencia 3 (17:45 - 18:00PM)', label: 'Conferencia 3 (17:45 - 18:00PM)' },
-  { id: 'Conferencia 4 (12:00PM)', label: 'Conferencia 4 (12:00PM)' },  
+  { id: 'Conferencia 4 (12:00 - 12:45PM)', label: 'Conferencia 4 (12:00 - 12:45PM)' },  
 ];
 
 const SEMESTRES = ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°+'];
