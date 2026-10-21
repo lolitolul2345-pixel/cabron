@@ -20,6 +20,19 @@ export interface AlumnoEvidencia {
   hora: string;
 }
 
+// Opciones del filtro con id exacto y horario visible
+const OPCIONES_FILTRO = [
+  { id: 'todas', label: 'Todas las conferencias' },
+  { id: 'Conferencia 1', label: 'Conferencia 1 (10:00 - 10:45 AM)' },
+  { id: 'Conferencia 2', label: 'Conferencia 2 (11:00 - 11:45 AM)' },
+  { id: 'Conferencia 3', label: 'Conferencia 3 (13:00 - 13:45 PM)' },
+  { id: 'Conferencia 4', label: 'Conferencia 4 (15:00 - 15:45 PM)' },
+  { id: 'Conferencia 1 PM', label: 'Conferencia 1 PM (16:00 - 16:45 PM)' },
+  { id: 'Conferencia 2 PM', label: 'Conferencia 2 PM (17:00 - 17:45 PM)' },
+  { id: 'Conferencia 3 PM', label: 'Conferencia 3 PM (17:45 - 18:00 PM)' },
+  { id: 'Conferencia 4 PM', label: 'Conferencia 4 PM (12:00 - 12:45 PM)' },
+];
+
 export const AdminPanel: React.FC = () => {
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
   const [busqueda, setBusqueda] = useState<string>('');
@@ -54,7 +67,7 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
-  // Filtro limpio y exacto para evitar mezclar conferencias
+  // Filtrado robusto que distingue limpiamente AM de PM y horarios completos
   const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
@@ -69,11 +82,12 @@ export const AdminPanel: React.FC = () => {
       const confReg = (reg.conferencia || '').toLowerCase().trim();
       const confFiltro = filtroConferencia.toLowerCase().trim();
 
-      // Compara directamente o extrayendo el ID base antes del paréntesis si lo trae
+      // Limpia textos entre paréntesis por si algún registro guardó horarios en la BD
       const baseReg = confReg.split('(')[0].trim();
       const baseFiltro = confFiltro.split('(')[0].trim();
 
-      coincideConf = (confReg === confFiltro) || (baseReg === baseFiltro);
+      // Coincidencia estricta de ID base para que Conferencia 4 no tome Conferencia 4 PM
+      coincideConf = confReg === confFiltro || baseReg === baseFiltro;
     }
 
     return coincideTexto && coincideConf;
@@ -198,20 +212,17 @@ export const AdminPanel: React.FC = () => {
             style={estilos.buscador}
           />
 
+          {/* Menú de filtro con etiquetas de horario completas */}
           <select
             value={filtroConferencia}
             onChange={(e) => setFiltroConferencia(e.target.value)}
             style={estilos.select}
           >
-            <option value="todas">Todas las conferencias</option>
-            <option value="Conferencia 1">Conferencia 1</option>
-            <option value="Conferencia 2">Conferencia 2</option>
-            <option value="Conferencia 3">Conferencia 3</option>
-            <option value="Conferencia 4">Conferencia 4</option>
-            <option value="Conferencia 1 PM">Conferencia 1 PM</option>
-            <option value="Conferencia 2 PM">Conferencia 2 PM</option>
-            <option value="Conferencia 3 PM">Conferencia 3 PM</option>
-            <option value="Conferencia 4 PM">Conferencia 4 PM</option>
+            {OPCIONES_FILTRO.map((opcion) => (
+              <option key={opcion.id} value={opcion.id}>
+                {opcion.label}
+              </option>
+            ))}
           </select>
 
           <button onClick={cargarDatos} disabled={cargando} style={estilos.botonRecargar}>
@@ -288,7 +299,6 @@ export const AdminPanel: React.FC = () => {
                     </small>
                   </td>
 
-                  {/* Etiqueta limpia que muestra exactamente el valor registrado */}
                   <td style={estilos.td}>
                     <span style={estilos.badgeConf}>{item.conferencia}</span>
                   </td>
