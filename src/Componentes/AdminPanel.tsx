@@ -65,7 +65,7 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
-  const registrosFiltrados = registros.filter((reg) => {
+const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
       reg.nombre.toLowerCase().includes(query) ||
@@ -79,13 +79,27 @@ export const AdminPanel: React.FC = () => {
       const valorRegistro = (reg.conferencia || '').toLowerCase().trim();
       const valorFiltro = filtroConferencia.toLowerCase().trim();
 
-      const confLimpiaRegistro = valorRegistro.split('(')[0].trim();
-      const confLimpiaFiltro = valorFiltro.split('(')[0].trim();
+      // Normalización exacta que preserva la distinción entre AM y PM
+      const esPMFiltro = valorFiltro.includes('pm') || valorFiltro.includes('12:00');
+      const esPMRegistro = valorRegistro.includes('pm') || valorRegistro.includes('12:00');
 
-      coincideConf =
-        valorRegistro === valorFiltro ||
-        confLimpiaRegistro === confLimpiaFiltro ||
-        valorRegistro.includes(confLimpiaFiltro);
+      // Si el filtro busca la versión PM (12:00 PM), exige que el registro también lo sea
+      if (valorFiltro.includes('conferencia 4')) {
+        if (esPMFiltro) {
+          coincideConf = esPMRegistro;
+        } else {
+          coincideConf = !esPMRegistro;
+        }
+      } else {
+        // Para las demás conferencias mantiene coincidencia limpia
+        const confLimpiaRegistro = valorRegistro.split('(')[0].trim();
+        const confLimpiaFiltro = valorFiltro.split('(')[0].trim();
+
+        coincideConf =
+          valorRegistro === valorFiltro ||
+          confLimpiaRegistro === confLimpiaFiltro ||
+          valorRegistro.includes(confLimpiaFiltro);
+      }
     }
 
     return coincideTexto && coincideConf;
