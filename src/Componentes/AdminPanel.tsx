@@ -20,6 +20,18 @@ export interface AlumnoEvidencia {
   hora: string;
 }
 
+// Mapa para mostrar los nombres con horarios en la tabla
+const TITULOS_CONFERENCIAS: { [key: string]: string } = {
+  'Conferencia 1': 'Conferencia 1 (10:00 - 10:45AM)',
+  'Conferencia 2': 'Conferencia 2 (11:00 - 11:45AM)',
+  'Conferencia 3': 'Conferencia 3 (13:00 - 13:45PM)',
+  'Conferencia 4': 'Conferencia 4 (15:00 - 15:45PM)',
+  'Conferencia 1 PM': 'Conferencia 1 (16:00 - 16:45PM)',
+  'Conferencia 2 PM': 'Conferencia 2 (17:00 - 17:45PM)',
+  'Conferencia 3 PM': 'Conferencia 3 (17:45 - 18:00PM)',
+  'Conferencia 4 PM': 'Conferencia 4 (12:00 - 12:45PM)',
+};
+
 export const AdminPanel: React.FC = () => {
   const [registros, setRegistros] = useState<AlumnoEvidencia[]>([]);
   const [busqueda, setBusqueda] = useState<string>('');
@@ -53,6 +65,7 @@ export const AdminPanel: React.FC = () => {
     cargarDatos();
   }, []);
 
+  // FILTRADO DE REGISTROS
   const registrosFiltrados = registros.filter((reg) => {
     const query = busqueda.toLowerCase().trim();
     const coincideTexto =
@@ -60,6 +73,7 @@ export const AdminPanel: React.FC = () => {
       reg.num_control.toLowerCase().includes(query) ||
       (reg.carrera && reg.carrera.toLowerCase().includes(query));
 
+    // Compara el id exacto guardado en Supabase (ej: "Conferencia 3")
     const coincideConf =
       filtroConferencia === 'todas' || reg.conferencia === filtroConferencia;
 
@@ -183,20 +197,21 @@ export const AdminPanel: React.FC = () => {
             style={estilos.buscador}
           />
 
+          {/* SELECTOR CORREGIDO: VALUE CORTO, TEXTO LARGO */}
           <select
             value={filtroConferencia}
             onChange={(e) => setFiltroConferencia(e.target.value)}
             style={estilos.select}
           >
-<option value="todas">Todas las conferencias</option>
-  <option value="Conferencia 1">Conferencia 1 (10:00 - 10:45AM)</option>
-  <option value="Conferencia 2">Conferencia 2 (11:00 - 11:45AM)</option>
-  <option value="Conferencia 3">Conferencia 3 (13:00 - 13:45PM)</option>
-  <option value="Conferencia 4">Conferencia 4 (15:00 - 15:45PM)</option>
-  <option value="Conferencia 1 PM">Conferencia 1 (16:00 - 16:45PM)</option>
-  <option value="Conferencia 2 PM">Conferencia 2 (17:00 - 17:45PM)</option>
-  <option value="Conferencia 3 PM">Conferencia 3 (17:45 - 18:00PM)</option>
-  <option value="Conferencia 4 PM">Conferencia 4 (12:00 - 12:45PM)</option>
+            <option value="todas">Todas las conferencias</option>
+            <option value="Conferencia 1">Conferencia 1 (10:00 - 10:45AM)</option>
+            <option value="Conferencia 2">Conferencia 2 (11:00 - 11:45AM)</option>
+            <option value="Conferencia 3">Conferencia 3 (13:00 - 13:45PM)</option>
+            <option value="Conferencia 4">Conferencia 4 (15:00 - 15:45PM)</option>
+            <option value="Conferencia 1 PM">Conferencia 1 (16:00 - 16:45PM)</option>
+            <option value="Conferencia 2 PM">Conferencia 2 (17:00 - 17:45PM)</option>
+            <option value="Conferencia 3 PM">Conferencia 3 (17:45 - 18:00PM)</option>
+            <option value="Conferencia 4 PM">Conferencia 4 (12:00 - 12:45PM)</option>
           </select>
 
           <button onClick={cargarDatos} disabled={cargando} style={estilos.botonRecargar}>
@@ -274,7 +289,9 @@ export const AdminPanel: React.FC = () => {
                   </td>
 
                   <td style={estilos.td}>
-                    <span style={estilos.badgeConf}>{item.conferencia}</span>
+                    <span style={estilos.badgeConf}>
+                      {TITULOS_CONFERENCIAS[item.conferencia] || item.conferencia}
+                    </span>
                   </td>
 
                   <td style={estilos.td}>
