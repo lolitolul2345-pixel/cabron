@@ -43,29 +43,48 @@ export const AdminPanel: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [descargandoExcel, setDescargandoExcel] = useState<boolean>(false);
 
-const cargarDatos = async () => {
-  setCargando(true);
-  setErrorMsg(null);
+  const cargarDatos = async () => {
+    setCargando(true);
+    setErrorMsg(null);
 
-  try {
-    // .range(0, 9999) supera el límite estándar de 1000 registros
-    const { data, error } = await supabase
-      .from('registros_alumnos')
-      .select('*')
-      .order('hora', { ascending: false })
-      .range(0, 9999);
+    try {
+      let todosLosRegistros: AlumnoEvidencia[] = [];
+      let desde = 0;
+      const tamanoLote = 1000;
+      let hayMas = true;
 
-    if (error) throw error;
-    setRegistros((data as AlumnoEvidencia[]) || []);
-  } catch (err: unknown) {
-    const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
-    console.error('Error al cargar datos:', err);
-    setErrorMsg(mensaje);
-    setRegistros([]);
-  } finally {
-    setCargando(false);
-  }
-};
+      // Pide bloques de 1000 en 1000 hasta vaciar la base de datos completa
+      while (hayMas) {
+        const { data, error } = await supabase
+          .from('registros_alumnos')
+          .select('*')
+          .order('hora', { ascending: false })
+          .range(desde, desde + tamanoLote - 1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          todosLosRegistros = [...todosLosRegistros, ...(data as AlumnoEvidencia[])];
+          desde += tamanoLote;
+          // Si el lote trajo menos de 1000, ya llegamos al final
+          if (data.length < tamanoLote) {
+            hayMas = false;
+          }
+        } else {
+          hayMas = false;
+        }
+      }
+
+      setRegistros(todosLosRegistros);
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
+      console.error('Error al cargar datos:', err);
+      setErrorMsg(mensaje);
+      setRegistros([]);
+    } finally {
+      setCargando(false);
+    }
+  };
 
   useEffect(() => {
     cargarDatos();
