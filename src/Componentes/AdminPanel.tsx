@@ -43,27 +43,29 @@ export const AdminPanel: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [descargandoExcel, setDescargandoExcel] = useState<boolean>(false);
 
-  const cargarDatos = async () => {
-    setCargando(true);
-    setErrorMsg(null);
+const cargarDatos = async () => {
+  setCargando(true);
+  setErrorMsg(null);
 
-    try {
-      const { data, error } = await supabase
-        .from('registros_alumnos')
-        .select('*')
-        .order('hora', { ascending: false });
+  try {
+    // .range(0, 9999) supera el límite estándar de 1000 registros
+    const { data, error } = await supabase
+      .from('registros_alumnos')
+      .select('*')
+      .order('hora', { ascending: false })
+      .range(0, 9999);
 
-      if (error) throw error;
-      setRegistros((data as AlumnoEvidencia[]) || []);
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
-      console.error('Error al cargar datos:', err);
-      setErrorMsg(mensaje);
-      setRegistros([]);
-    } finally {
-      setCargando(false);
-    }
-  };
+    if (error) throw error;
+    setRegistros((data as AlumnoEvidencia[]) || []);
+  } catch (err: unknown) {
+    const mensaje = err instanceof Error ? err.message : 'Error al conectar con la base de datos.';
+    console.error('Error al cargar datos:', err);
+    setErrorMsg(mensaje);
+    setRegistros([]);
+  } finally {
+    setCargando(false);
+  }
+};
 
   useEffect(() => {
     cargarDatos();
