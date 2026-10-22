@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../api_supabase/supabaseClient';
-import { exportarTablaExcel } from '../utils/excelExporter';
+import { exportarTablaExcel, exportarTablaExcelRapido } from '../utils/excelExporter';
 
 export interface AlumnoEvidencia {
   id: string;
@@ -111,6 +111,27 @@ const registrosFiltrados = registros.filter((reg) => {
 
   return coincideTexto && coincideConf;
 });
+
+  const [descargandoRapido, setDescargandoRapido] = useState<boolean>(false);
+
+const handleDescargarRapido = async () => {
+  if (registrosFiltrados.length === 0) {
+    alert('No hay registros en pantalla para exportar.');
+    return;
+  }
+  setDescargandoRapido(true);
+  try {
+    await exportarTablaExcelRapido(
+      registrosFiltrados,
+      `reporte_rapido_${new Date().toISOString().slice(0, 10)}.xlsx`
+    );
+  } catch (error) {
+    console.error('Error al generar Excel rápido:', error);
+    alert('Ocurrió un error al generar el archivo rápido.');
+  } finally {
+    setDescargandoRapido(false);
+  }
+};
   
 
   const handleDescargarExcel = async () => {
@@ -260,6 +281,17 @@ const registrosFiltrados = registros.filter((reg) => {
           >
             {descargandoExcel ? '⏳ Generando...' : '📊 Exportar XLSX'}
           </button>
+          <button
+  onClick={handleDescargarRapido}
+  disabled={descargandoRapido || registrosFiltrados.length === 0}
+  style={{
+    ...estilos.botonExcel,
+    backgroundColor: registrosFiltrados.length === 0 ? '#94a3b8' : '#0284c7',
+    cursor: registrosFiltrados.length === 0 ? 'not-allowed' : 'pointer',
+  }}
+>
+  {descargandoRapido ? '⏳ Generando...' : '⚡ Excel Rápido (URLs)'}
+</button>
         </div>
       </section>
 
