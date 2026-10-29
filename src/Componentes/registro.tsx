@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, type ChangeEvent, type FormEvent, type Dra
 import { useNavigate } from 'react-router';
 import { supabase } from '../api_supabase/supabaseClient';
 
-// Tipado estricto del estado del formulario
 interface EvidenceFormData {
   numeroControl: string;
   nombreAlumno: string;
@@ -32,7 +31,6 @@ const CARRERAS_TECNM = [
   'Ingeniería Logística',
 ];
 
-// Opciones con valor completo para coincidir con el Excel agrupado
 const CONFERENCIAS = [
   { id: 'Conferencia 1 (10:00 - 10:45AM)', label: 'Conferencia 1 (10:00 - 10:45AM)' },
   { id: 'Conferencia 2 (11:00 - 11:45AM)', label: 'Conferencia 2 (11:00 - 11:45AM)' },
@@ -41,10 +39,91 @@ const CONFERENCIAS = [
   { id: 'Conferencia 1 (16:00 - 16:45PM)', label: 'Conferencia 1 (16:00 - 16:45PM)' },
   { id: 'Conferencia 2 (17:00 - 17:45PM)', label: 'Conferencia 2 (17:00 - 17:45PM)' },
   { id: 'Conferencia 3 (17:45 - 18:00PM)', label: 'Conferencia 3 (17:45 - 18:00PM)' },
-  { id: 'Conferencia 4 (12:00 - 12:45PM)', label: 'Conferencia 4 (12:00 - 12:45PM)' },  
+  { id: 'Conferencia 4 (12:00 - 12:45PM)', label: 'Conferencia 4 (12:00 - 12:45PM)' },
 ];
 
 const SEMESTRES = ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°+'];
+
+// Compresión segura en cliente
+const comprimirImagen = (archivo: File): Promise<File> => {
+  return new Promise((resolve) => {
+    if (!archivo.type.startsWith('image/')) {
+      return resolve(archivo);
+    }
+
+    const lector = new FileReader();
+    lector.readAsDataURL(archivo);
+    lector.onload = (evento: ProgressEvent<FileReader>) => {
+      const resultado = evento.target?.result;
+      if (typeof resultado !== 'string') {
+        return resolve(archivo);
+      }
+
+      const img = new Image();
+      img.src = resultado;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_DIM = 1280;
+        let ancho = img.width;
+        let alto = img.height;
+
+        if (ancho > alto) {
+          if (ancho > MAX_DIM) {
+            alto = Math.round((alto * MAX_DIM) / ancho);
+            ancho = MAX_DIM;
+          }
+        } else {
+          if (alto > MAX_DIM) {
+            ancho = Math.round((ancho * MAX_DIM) / alto);
+            alto = MAX_DIM;
+          }
+        }
+
+        canvas.width = ancho;
+        canvas.height = alto;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, ancho, alto);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const archivoOptimizado = new File([blob], archivo.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(archivoOptimizado);
+            } else {
+              resolve(archivo);
+            }
+          },
+          'image/jpeg',
+          0.72
+        );
+      };
+      img.onerror = () => resolve(archivo);
+    };
+    lector.onerror = () => resolve(archivo);
+  });
+};
+
+// Subida a Cloudflare R2
+// Subida a Cloudflare R2 con tipado seguro de errores
+const subirFotoR2 = async (archivo: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', archivo);
+
+  const respuesta = await fetch('/api/upload-r2', {
+    method: 'POST',
+    body: formData,
+  });
+  if (!respuesta.ok) {
+    const errorData = (await respuesta.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(errorData?.error || 'Error al subir la imagen a Cloudflare R2');
+  }
+
+  const data = (await respuesta.json()) as { url: string };
+  return data.url;
+};
 
 export default function Registro() {
   const navigate = useNavigate();
@@ -67,7 +146,6 @@ export default function Registro() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Estados para búsqueda y edición de registro
   const [modoEdicion, setModoEdicion] = useState<boolean>(false);
   const [idRegistroEdicion, setIdRegistroEdicion] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -148,7 +226,6 @@ export default function Registro() {
     });
   };
 
-  // Buscar un registro previamente guardado para corregir datos
   const handleBuscarParaEditar = async () => {
     if (!formData.numeroControl.trim() || !formData.numeroConferencia) {
       setErrorMsg('Ingresa tu número de control y selecciona la conferencia para buscar tu registro.');
@@ -199,8 +276,9 @@ export default function Registro() {
       setIdRegistroEdicion(data.id);
       setModoEdicion(true);
       setSuccessMsg('✅ Registro encontrado. Modifica los campos que necesites y pulsa "Guardar Cambios".');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error al buscar tu registro.');
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Error al buscar tu registro.';
+      setErrorMsg(mensaje);
     } finally {
       setIsSearching(false);
     }
@@ -247,30 +325,15 @@ export default function Registro() {
       for (let i = 0; i < imagenes.length; i++) {
         const item = imagenes[i];
         if (item.file) {
-          const fileExt = item.file.name.split('.').pop();
-          const cleanControl = formData.numeroControl.replace(/[^a-zA-Z0-9]/g, '');
-          const filePath = `${cleanControl}_${Date.now()}_${i + 1}.${fileExt}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('evidencias')
-            .upload(filePath, item.file);
-
-          if (uploadError) {
-            throw new Error(`Error al subir imagen ${i + 1}: ${uploadError.message}`);
-          }
-
-          const { data: publicUrlData } = supabase.storage
-            .from('evidencias')
-            .getPublicUrl(filePath);
-
-          urlsSubidas.push(publicUrlData.publicUrl);
+          const archivoComprimido = await comprimirImagen(item.file);
+          const urlPublicaR2 = await subirFotoR2(archivoComprimido);
+          urlsSubidas.push(urlPublicaR2);
         } else {
           urlsSubidas.push(item.previewUrl);
         }
       }
 
       if (modoEdicion && idRegistroEdicion) {
-        // MODO EDICIÓN
         const { error: updateError } = await supabase
           .from('registros_alumnos')
           .update({
@@ -296,7 +359,6 @@ export default function Registro() {
         setModoEdicion(false);
         setIdRegistroEdicion(null);
       } else {
-        // NUEVO REGISTRO
         const { error: insertError } = await supabase
           .from('registros_alumnos')
           .insert([
@@ -319,14 +381,12 @@ export default function Registro() {
           ]);
 
         if (insertError) {
-          console.error('Error al insertar registro:', insertError);
           throw new Error(`Error en base de datos: ${insertError.message}`);
         }
 
         setSuccessMsg('¡Evidencia registrada exitosamente en CheckPoint!');
       }
 
-      // Limpiar formulario
       imagenes.forEach((img) => {
         if (img.file) URL.revokeObjectURL(img.previewUrl);
       });
@@ -341,8 +401,9 @@ export default function Registro() {
         titulo: '',
         descripcion: '',
       });
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Ocurrió un error al procesar tu registro.');
+    } catch (err: unknown) {
+      const mensaje = err instanceof Error ? err.message : 'Ocurrió un error al procesar tu registro.';
+      setErrorMsg(mensaje);
     } finally {
       setIsSubmitting(false);
     }
@@ -350,15 +411,10 @@ export default function Registro() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
-      
-      {/* BARRA SUPERIOR INSTITUCIONAL (TecNM Azul Marino #1B396A) */}
       <header className="bg-[#1B396A] text-white shadow-md border-b-4 border-amber-500 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-          
           <div className="flex items-center gap-2">
-            <span className="text-xl font-extrabold tracking-tight text-white">
-              CHECKPOINT
-            </span>
+            <span className="text-xl font-extrabold tracking-tight text-white">CHECKPOINT</span>
             <span className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-md">
               TecNM Tuxtla
             </span>
@@ -388,7 +444,6 @@ export default function Registro() {
         </div>
       </header>
 
-      {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1B396A] tracking-tight">
@@ -401,7 +456,6 @@ export default function Registro() {
           </p>
         </div>
 
-        {/* BANNER DE BÚSQUEDA PARA EDITAR REGISTROS PREVIOS */}
         <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
           <div>
             <span className="text-sm font-bold text-[#1B396A]">¿Te equivocaste en un registro enviado previamente?</span>
@@ -452,7 +506,6 @@ export default function Registro() {
           onSubmit={handleSubmit}
           className="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden"
         >
-          {/* ZONA BLANCA INSTITUCIONAL CON AMBOS LOGOTIPOS */}
           <div className="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white">
             <img
               src="/photos/Logo-TecNM.png"
@@ -485,7 +538,6 @@ export default function Registro() {
             />
           </div>
 
-          {/* SECCIÓN 1: DATOS ACADÉMICOS */}
           <div className="p-6 sm:p-8 border-b border-slate-100">
             <div className="flex items-center gap-2.5 mb-6">
               <span className="w-2 h-6 rounded-full bg-[#1B396A]" />
@@ -593,7 +645,6 @@ export default function Registro() {
             </div>
           </div>
 
-          {/* SECCIÓN 2: INFORMACIÓN DE LA CONFERENCIA */}
           <div className="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/30">
             <div className="flex items-center gap-2.5 mb-6">
               <span className="w-2 h-6 rounded-full bg-amber-500" />
@@ -659,7 +710,6 @@ export default function Registro() {
             </div>
           </div>
 
-          {/* SECCIÓN 3: SUBIR FOTOS */}
           <div className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">

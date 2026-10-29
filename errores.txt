@@ -1,0 +1,1 @@
+src/Componentes/registro.tsx(121,32): error TS2339: Property 'error' does not exist on type '{}'.
