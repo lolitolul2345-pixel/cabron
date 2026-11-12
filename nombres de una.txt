@@ -1,0 +1,212 @@
+┌─────────┬─────────────┬───────────────────────────────────────────┬───────────────────────────────────┐
+│ (index) │ Control     │ Nombre                                    │ Conferencia                       │
+├─────────┼─────────────┼───────────────────────────────────────────┼───────────────────────────────────┤
+│ 0       │ '26270840'  │ 'Valle Moreno Bruno'                      │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 1       │ '25270401'  │ 'Flecha Hernández César Rodrigo'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 2       │ '25270298'  │ 'De la cruz López Juan Carlos'            │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 3       │ '26270780'  │ 'DIAZ GARCIA DIEGO EDUARDO'               │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 4       │ '25270603'  │ 'Joan Benjamin González Jiménez'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 5       │ '25270315'  │ 'Jonapá Hernández Jorge Alberto'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 6       │ '26270391'  │ 'Hernandez Avendaño Noe Alejandro'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 7       │ '26270374'  │ 'De la Cruz Cundapi Isela Guadalupe'      │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 8       │ '26270398'  │ 'Avado Sánchez José Eduardo'              │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 9       │ '26270392'  │ 'Falcon Hernandez Zuleyma Fernanda'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 10      │ '26270381'  │ 'Hernández López Cristian Eduardo'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 11      │ '26270378'  │ 'Pérez López Alexis Alfu'                 │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 12      │ '26270384'  │ 'González Alegría Alan Isaí'              │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 13      │ '26270373'  │ 'Nataren flores Daniel'                   │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 14      │ '26270383'  │ 'Branndon Pérez Díaz'                     │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 15      │ '25270668'  │ 'Vazquez López Blanca Zusely'             │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 16      │ '26270361'  │ 'Domínguez Damián julio'                  │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 17      │ '26260365'  │ 'Melgarejo Martínez Rafael'               │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 18      │ '24270799'  │ 'Dariana María Martínez Hidalgo'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 19      │ '26270395'  │ 'González Espinosa Lander Alejandro'      │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 20      │ '26270480'  │ 'FLORES PEREZ ALISON PAOLA'               │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 21      │ '26270396'  │ 'Vázquez Vázquez Diego Emanuel'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 22      │ '26270389'  │ 'Hernández López Gabriel de Jesús'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 23      │ '25270294'  │ 'Vera Ortiz Ángel Gabriel'                │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 24      │ '26270370'  │ 'García Vázquez Perla Valeria'            │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 25      │ '26270399'  │ 'Mejía Hernández Kash le'                 │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 26      │ '23270848'  │ 'Sarmiento González Randal Fernando'      │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 27      │ '26270390'  │ 'Aguilar Ramírez Christopher Omar'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 28      │ '25270951'  │ 'Villalobos samorano José Geovanny'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 29      │ '25270657'  │ 'Velasco Sanchez Cristopher'              │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 30      │ '26260714'  │ 'Marcos Iván Arias Gutiérrez'             │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 31      │ '26270892'  │ 'Yosgart Andres gonzalez nandayapa'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 32      │ '20270889'  │ 'Feliciano Montero Manuel Isaac'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 33      │ 'C23270578' │ 'Gordillo Garcia Romeo Rafael'            │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 34      │ '26270368'  │ 'Ovando Vazquez Andrés Eligio'            │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 35      │ '20270946'  │ 'Hernández Guzmán Kevin Jair'             │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 36      │ '262703'    │ 'Espinosa Espinosa Andres De Jesús'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 37      │ '25171365'  │ 'Palacios Jiménez Irene Joselyn'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 38      │ '25270583'  │ 'Toalá Culebro Alberto Emiliano'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 39      │ '26270393'  │ 'Zuñiga Hernandez Carlos Gabriel'         │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 40      │ '26270867'  │ 'Brigitte Arleth Chandoqui López'         │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 41      │ '26270481'  │ 'López Quintal Lucero Berenice'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 42      │ '25270593'  │ 'Gómez Morales José Antonio'              │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 43      │ '26270364'  │ 'Manga Jiménez Gabriela Guadalupe'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 44      │ '25270651'  │ 'Utrilla Santiz Cristian Armando'         │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 45      │ '25271355'  │ 'Sainz Serrano Eduardo Enrique'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 46      │ '25271351'  │ 'Hernández Sánchez Ángel Sebastián'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 47      │ '26270498'  │ 'Rojas López Cinthya Paola'               │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 48      │ '26270444'  │ 'Benavides Hernández Ian Alejandro'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 49      │ '25271384'  │ 'Estrada López Luiguina Montserrat'       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 50      │ '25270816'  │ 'Chávez Herrera José Andrés'              │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 51      │ '25271340'  │ 'Morales Rodriguez Axel de Jesus'         │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 52      │ '26270376'  │ 'Núñez Ruiz Alan Iván'                    │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 53      │ '25270851'  │ 'Lopez Pacheco Bryan josue'               │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 54      │ '25270885'  │ 'Cedillo Martínez Roberto Santiago'       │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 55      │ '25270854'  │ 'Ángel Gabriel Ordóñez Solid'             │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 56      │ 'C25270591' │ 'Vázquez Sánchez Giovanny Alberto'        │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 57      │ '25270632'  │ 'Santos Santos Henrry Alejandro'          │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 58      │ '26270889'  │ 'Feliciano Montero Manuel Isaac'          │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 59      │ '26270007'  │ 'Pérez Pérez Biery'                       │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 60      │ '26270714'  │ 'Marcos Iván Arias Gutiérrez'             │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 61      │ '25270814'  │ 'Lopez Lopez Christian Eduardo'           │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 62      │ '26270963'  │ 'Macias Moreno Roberto Yamin'             │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 63      │ '26270300'  │ 'José fabricio Pérez Pérez'               │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 64      │ '26271551'  │ 'Perez Hernández Ezequiel Nehemías'       │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 65      │ '26270632'  │ 'Santiz López Victor Manuel'              │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 66      │ '26270692'  │ 'Álvarez Ruiz Irving emiliano'            │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 67      │ '26270604'  │ 'Jorge Gabriel Pérez López'               │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 68      │ 'C25270332' │ 'López Gutiérrez Erick Alberto'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 69      │ '26271085'  │ 'Collazo Pérez Jimena'                    │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 70      │ '26271096'  │ 'Diego Bolaños López'                     │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 71      │ '25270371'  │ 'González Blanco Hannia'                  │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 72      │ '26271102'  │ 'Villatoro Santis Jorge Eli'              │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 73      │ '25270615'  │ 'Jiménez Gómez Hector Santiago'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 74      │ '26271124'  │ 'Osvaldo Enrique Ruiz Vázquez'            │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 75      │ '2323707'   │ 'Jorge abimael Hernandez garcia'          │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 76      │ '26270310'  │ 'Camacho Álvarez José Julián'             │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 77      │ '26271812'  │ 'Orozco Reyes Everardo'                   │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 78      │ '26270133'  │ 'Vazquez Palacios Daphne Michelle'        │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 79      │ '26270110'  │ 'Limón Pérez Jana Michell'                │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 80      │ '26271322'  │ 'Melanie Rousse López Rodríguez'          │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 81      │ '26270592'  │ 'Diego Toledo Garay'                      │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 82      │ '26270136'  │ 'Cancino López Tristan Balam'             │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 83      │ '26270111'  │ 'Pascacio cardenas Fernando Josué'        │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 84      │ '26270069'  │ 'Urbina López Ricardo Ismael'             │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 85      │ '26270068'  │ 'Juan Oswaldo lopez Pérez'                │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 86      │ '26270095'  │ 'Ortiz Domínguez José Manuel'             │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 87      │ '23270765'  │ 'Jorge abimael Hernandez garcia'          │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 88      │ '25270259'  │ 'Díaz Díaz Karen'                         │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 89      │ '26270108'  │ 'Ruiz López Jose Luis'                    │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 90      │ '25270834'  │ 'Pablo Hernández Adrián Efraín'           │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 91      │ '26270132'  │ 'Álvarez Pérez Ian Carlo'                 │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 92      │ '25271365'  │ 'Palacios Jiménez Irene Joselyn'          │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 93      │ '26271074'  │ 'Hernández López Miguel Ángel'            │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 94      │ '26271657'  │ 'Velasco Núñez Thelma Sofía'              │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 95      │ '26271668'  │ 'Albores Montejo Cristopher Albores'      │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 96      │ '25270295'  │ 'Zamora Sosa Mauricio'                    │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 97      │ '26271180'  │ 'Tovilla Cruz Johana Itzel'               │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 98      │ '26271095'  │ 'Mendoza Mejia Eddi Nicolas'              │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 99      │ '21270449'  │ 'Alexis Eduardo Diaz Diaz'                │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 100     │ '26271130'  │ 'Villanueva Pérez Ander'                  │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 101     │ '‪26271135'  │ 'Roblero Rodríguez Edrei Aziel'           │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 102     │ '26270640'  │ 'Ponce Gerónimo Omar Abelardo'            │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 103     │ '25270239'  │ 'Gabriel García Hernández'                │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 104     │ '26270998'  │ 'Ramos López Juan Fernando'               │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 105     │ '25271350'  │ 'López Vera Fernando Agustín'             │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 106     │ '‪26271135‬'  │ 'Roblero Rodríguez Edrei Aziel'           │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 107     │ '25270526'  │ 'Carlos Raúl colmenares Pérez'            │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 108     │ '25270985'  │ 'Steeven Alessandro Cortes Solís'         │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 109     │ '25270967'  │ 'Gil Aguilar Gael'                        │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 110     │ '26270808'  │ 'Ricardo Olvera morales'                  │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 111     │ '25270950'  │ 'Escobar Martínez José Miguel'            │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 112     │ '26271009'  │ 'Gómez Cruz Josue Elías'                  │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 113     │ '25270927'  │ 'Decelis Méndez Lysandher Esteny'         │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 114     │ '252710919' │ 'PÉREZ SÁNCHEZ ERICK EDUARDO'             │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 115     │ '25270976'  │ 'Juan Luis Santiz Martín'                 │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 116     │ '26271171'  │ 'Chame Hernandez Angel Alberto'           │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 117     │ '25270261'  │ 'Zamorano Pérez Ángel Eduardo'            │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 118     │ '25270273'  │ 'Cruz Pérez Valeria Monserrat'            │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 119     │ '24270339'  │ 'Miguel Angel Mora Sustaita'              │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 120     │ '24270430'  │ 'Escolastico Castañeda Juan carlos'       │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 121     │ '26271072'  │ 'López Ramírez Kevin Alexis'              │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 122     │ '25270200'  │ 'Gómez Murias Agustín'                    │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 123     │ '25270812'  │ 'Diego Jahaziel Moscoso Alfaro'           │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 124     │ '25270815'  │ 'Lopez Lopez Christian Eduardo'           │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 125     │ '24270592'  │ 'Varela Coutiño Carlos Emiliano'          │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 126     │ '24271027'  │ 'Domínguez Sarmiento Jonathan'            │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 127     │ '25270912'  │ 'Diego Jahaziel Moscoso Alfaro'           │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 128     │ '25271409'  │ 'Pech Pérez Luis Eduardo'                 │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 129     │ '24271048'  │ 'Gallegos Acero Luis Ignacio'             │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 130     │ '25270890'  │ 'González González Sophia'                │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 131     │ '26271203'  │ 'Ortega Quintero Axel Essaú'              │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 132     │ '24271069'  │ 'Méndez Vázquez Jorge Alonso'             │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 133     │ '25270314'  │ 'Palacios Díaz Oswaldo'                   │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 134     │ '26270086'  │ 'Flores Hernandez Fernando'               │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 135     │ '26271178S' │ 'Diego Gael Mendez Robles'                │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 136     │ '26271150'  │ 'Jiménez Cruz Jacob Isaías'               │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 137     │ '26271125'  │ 'JUAN MANUEL SANCHEZ HERNANDEZ'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 138     │ '26271361'  │ 'Gómez Morales Ingrid Jocelyn'            │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 139     │ '26271114'  │ 'ANASTACIO MARTINEZ JOSE ALEJANDRO'       │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 140     │ '26271080'  │ 'Alvarado Trujillo Alan'                  │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 141     │ '26271167'  │ 'Chaves Lopez Jhonatan'                   │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 142     │ '26271201'  │ 'Gómez Acuña Amanda Montserrat'           │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 143     │ '26270948'  │ 'Mayor Morales Esdras Nahum'              │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 144     │ '25270686'  │ 'Caleb Pérez García'                      │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 145     │ '26271197'  │ 'Leopoldo Reyes Rios'                     │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 146     │ '24271119'  │ 'Cruz Pérez Corazón de Jesús'             │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 147     │ '26270417'  │ 'Héctor Pérez Pérez'                      │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 148     │ '26271140'  │ 'Pérez López Samuel'                      │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 149     │ '26271177'  │ 'Viza de la Cruz Astrid Lizeth'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 150     │ '24271022'  │ 'Dulce María Gómez Martínez'              │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 151     │ '26271105'  │ 'Canseco machique francisco emanuel'      │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 152     │ '26270139'  │ 'García Hernández Carlos Eduardo'         │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 153     │ '26271139'  │ 'Angeles Liliana Lorenzo Castañón'        │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 154     │ '24270770'  │ 'Montesinos Carrillo Abrill'              │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 155     │ '26271162'  │ 'Fuentes Zacarias Brayan'                 │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 156     │ '26271104'  │ 'Villatoro Peña Axel Oswaldo'             │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 157     │ '26271098'  │ 'López Hernández Jesús Alexander'         │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 158     │ '26271137'  │ 'Omar Gómez Jiménez'                      │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 159     │ '26271112'  │ 'Flores Gómez Rafael'                     │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 160     │ '26170962'  │ 'Orellana Flores Luis Angel'              │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 161     │ '26271076'  │ 'José Manuel Sánchez López'               │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 162     │ '20271602'  │ 'Carlos Emmanuel Gutierrez Hernández'     │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 163     │ '26271097'  │ 'HERNANDEZ CRUZ SAUDI FRANCISCO'          │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 164     │ '26270839'  │ 'Zetino Ibarra Kiara Guadalupe'           │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 165     │ '26271250'  │ 'Pinto Gutiérrez Jaciel de jesús'         │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 166     │ '26270711'  │ 'Aarón Elías Trujillo Moreno'             │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 167     │ '26270531'  │ 'Sánchez Pérez Jonathan Alejandro'        │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 168     │ '25271188'  │ 'Quintero Espinoza Orlando'               │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 169     │ '25270659'  │ 'Ochoa Hernández julio cesar'             │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 170     │ '26271077'  │ 'Perez mena braian natanael'              │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 171     │ '25270955'  │ 'María Fernanda Jordan Alfaro'            │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 172     │ '26271493'  │ 'Campos Gordillo Joel'                    │ 'Conferencia 2 (11:00 - 11:45AM)' │
+│ 173     │ '26271092'  │ 'Castillo Colmenares Diego'               │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 174     │ '26271440'  │ 'Montufar Vázquez Zahira Jocelyne'        │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 175     │ '26271192'  │ 'Flores López Eduardo Abimael'            │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 176     │ '26271903'  │ 'PERALTA YEDRA CARLOS ALBERTO'            │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 177     │ '26271129'  │ 'Aguilar Pico Luis Roberto'               │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 178     │ '25270287'  │ 'Guillen Inchaustegui Braulio Alexander'  │ 'Conferencia 1 (10:00 - 10:45AM)' │
+│ 179     │ '25270998'  │ 'Anzueto Martínez Brenda Guadalupe'       │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 180     │ '25271420'  │ 'Fonseca Trujillo Azul Naomi'             │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 181     │ '25271194'  │ 'López López Ana Karina'                  │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 182     │ '26271222'  │ 'JESÚS GEANANDER PÉREZ VERDUGO'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 183     │ '26271258'  │ 'Sanchez Garcia Otoniel Erasto'           │ 'Conferencia 3 (13:00 - 13:45PM)' │
+│ 184     │ '20260963'  │ 'Macias Moreno Roberto Yamin'             │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 185     │ '26271234'  │ 'Castillejos Hernández Cristhian Jared'   │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 186     │ '25271169'  │ 'Rivera Camacho Melanny Romina'           │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 187     │ '26271198'  │ 'Suárez Sánchez Andy Rafael'              │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 188     │ '26271116'  │ 'Trejo Pérez Rigoberto'                   │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 189     │ '25270970'  │ 'Herrera Sarmiento Jordán de Jesús'       │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 190     │ '25270267'  │ 'Gomez de la cruz yulian valdemar'        │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 191     │ '26271899'  │ 'Díaz López Daniel Iram'                  │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 192     │ '25270982'  │ 'Roblero Lopez Yareni Margarita'          │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 193     │ '25271171'  │ 'Carlos Iván Guillén Hernández'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 194     │ '26271245'  │ 'Gordillo Jimenez Carlos Josel'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 195     │ '26271574'  │ 'Gonzalez Trujillo Alan Ricardo'          │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 196     │ '26371140'  │ 'Pérez López Samuel'                      │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 197     │ '20261142'  │ 'Sanchez Abadía Kenia'                    │ 'Conferencia 4 (12:00 - 12:45PM)' │
+│ 198     │ '26271172'  │ 'Garcia Dias Diego de Jesus'              │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 199     │ '26271216'  │ 'Álvaro López Rodibert Nicolás Damián'    │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 200     │ '26271898'  │ 'Hernandez Suárez Francisco'              │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 201     │ '26271663'  │ 'De La Cruz Garrido Hugo Antonio'         │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 202     │ '25271187'  │ 'Gutiérrez León Ana Karen'                │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 203     │ '25271431'  │ 'Hilda Monserrat Velázquez de los santos' │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 204     │ '25270224'  │ 'De la Cruz Gutiérrez Dámaris Jocabeth'   │ 'Conferencia 1 (16:00 - 16:45PM)' │
+│ 205     │ '26271594'  │ 'Pérez López Michelle Carolina'           │ 'Conferencia 3 (17:45 - 18:00PM)' │
+│ 206     │ '26371600'  │ 'Regina Alexandra Hernández Molina'       │ 'Conferencia 4 (15:00 - 15:45PM)' │
+│ 207     │ '26271654'  │ 'López Ramírez Gabriela'                  │ 'Conferencia 2 (17:00 - 17:45PM)' │
+│ 208     │ '26271611'  │ 'Maldonado Asencio Evelyn Belen'          │ 'Co    

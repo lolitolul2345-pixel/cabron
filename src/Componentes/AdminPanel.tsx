@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../api_supabase/supabaseClient';
 import { exportarTablaExcel, exportarTablaExcelRapido } from '../utils/excelExporter';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export interface AlumnoEvidencia {
   id: string;
@@ -253,54 +253,278 @@ return Array.from(mapa.values())
       .sort((a, b) => b.total_conferencias - a.total_conferencias);
   }, [registros, busqueda]);
 
+  // Cálculo de alumnos con SOLO 1 conferencia e impresión en consola
+  const alumnosSoloUna = useMemo(() => {
+    const mapa = new Map<string, AlumnoFrecuente>();
+
+    registros.forEach((reg) => {
+      const controlLimpio = (reg.num_control || '').trim().toUpperCase();
+      if (!controlLimpio) return;
+
+      const conferenciaLimpia = (reg.conferencia || '').trim();
+
+      if (!mapa.has(controlLimpio)) {
+        mapa.set(controlLimpio, {
+          num_control: controlLimpio,
+          nombre: (reg.nombre || '').trim(),
+          carrera: (reg.carrera || '').trim(),
+          semestre: (reg.semestre || '').trim(),
+          grupo: (reg.grupo || '').trim(),
+          total_conferencias: conferenciaLimpia ? 1 : 0,
+          detalles_conferencias: conferenciaLimpia
+            ? [{ conferencia: conferenciaLimpia, titulo_evidencia: '', descripcion: '', hora: reg.hora }]
+            : [],
+        });
+      } else {
+        const existente = mapa.get(controlLimpio)!;
+        const yaExiste = existente.detalles_conferencias.some(
+          (item) => item.conferencia.toLowerCase() === conferenciaLimpia.toLowerCase()
+        );
+        if (conferenciaLimpia && !yaExiste) {
+          existente.detalles_conferencias.push({
+            conferencia: conferenciaLimpia,
+            titulo_evidencia: '',
+            descripcion: '',
+            hora: reg.hora,
+          });
+          existente.total_conferencias = existente.detalles_conferencias.length;
+        }
+      }
+    });
+
+    return Array.from(mapa.values()).filter((alumno) => alumno.total_conferencias === 1);
+  }, [registros]);
+
+  // Mostrar resumen y listado en la consola cuando cargan los datos
+  useEffect(() => {
+    if (registros.length === 0) return;
+
+    console.group('📊 Resumen de Asistencias por Número de Control');
+    console.log(`Total de registros crudos: ${registros.length}`);
+    console.log(`Alumnos únicos totales: ${alumnosSoloUna.length + alumnosDosOMas.length}`);
+    console.log(`✅ Alumnos con 2 o más conferencias: ${alumnosDosOMas.length}`);
+    console.log(`⚠️ Alumnos con SOLO 1 conferencia: ${alumnosSoloUna.length}`);
+    
+    console.table(
+      alumnosSoloUna.map((a) => ({
+        Control: a.num_control,
+        Nombre: a.nombre,
+        Carrera: a.carrera,
+        Semestre: `${a.semestre}° ${a.grupo}`,
+        Conferencia: a.detalles_conferencias[0]?.conferencia || 'Sin conferencia',
+      }))
+    );
+    console.groupEnd();
+  }, [registros, alumnosSoloUna, alumnosDosOMas]);
+
   // Descargar Excel de la tabla (2+ Conferencias) con sus observaciones
-  const handleDescargarExcelFrecuentes = () => {
+// Descargar Excel estilizado con columnas dinámicas por conferencia y observaciones abajo
+  const handleDescargarExcelFrecuentes = async () => {
     if (alumnosDosOMas.length === 0) {
       alert('No hay alumnos con 2 o más conferencias para exportar.');
       return;
     }
 
-    const datosParaExcel = alumnosDosOMas.map((alumno, index) => {
-      const resumenConferencias = alumno.detalles_conferencias
-        .map((det, idx) => {
-          const obs = det.descripcion ? ` (Obs: ${det.descripcion})` : '';
-          const tit = det.titulo_evidencia ? ` - "${det.titulo_evidencia}"` : '';
-          return `${idx + 1}. ${det.conferencia}${tit}${obs}`;
-        })
-        .join('\n');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('2 o más Conferencias', {
+      views: [{ state: 'frozen', ySplit: 1 }], // Congela la fila de encabezados al hacer scroll
+    });
 
-      return {
-        '#': index + 1,
-        'No. Control': alumno.num_control,
-        'Nombre Completo': alumno.nombre,
-        'Carrera': alumno.carrera,
-        'Semestre': alumno.semestre,
-        'Grupo': alumno.grupo,
-        'Total Conferencias': alumno.total_conferencias,
-        'Conferencias y Observaciones': resumenConferencias,
+    // Calculamos el máximo de conferencias que tiene un alumno para crear las columnas dinámicamente
+    const maxConferencias = Math.max(
+      ...alumnosDosOMas.map((a) => a.detalles_conferencias.length),
+      2
+    );
+
+    // Definición de columnas base + columnas dinámicas (Conferencia 1, Conferencia 2, etc.)
+    const columnas: Partial<ExcelJS.Column>[] = [
+      { header: '#', key: 'num', width: 6 },
+      { header: 'No. Control', key: 'control', width: 15 },
+      { header: 'Nombre Completo', key: 'nombre', width: 34 },
+      { header: 'Carrera', key: 'carrera', width: 28 },
+      { header: 'Sem.', key: 'semestre', width: 8 },
+      { header: 'Grupo', key: 'grupo', width: 8 },
+      { header: 'Total', key: 'total', width: 10 },
+    ];
+
+    for (let i = 1; i <= maxConferencias; i++) {
+      columnas.push({
+        header: `Conferencia ${i}`,
+        key: `conf_${i}`,
+        width: 48,
+      });
+    }
+
+    worksheet.columns = columnas;
+
+    // Estilo del encabezado (Azul TecNM con texto blanco y negrita)
+    const headerRow = worksheet.getRow(1);
+    headerRow.height = 30;
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1B365D' },
+      };
+      cell.font = {
+        name: 'Segoe UI',
+        size: 11,
+        bold: true,
+        color: { argb: 'FFFFFFFF' },
+      };
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      };
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF0F172A' } },
+        bottom: { style: 'medium', color: { argb: 'FFE0A926' } },
+        left: { style: 'thin', color: { argb: 'FF334155' } },
+        right: { style: 'thin', color: { argb: 'FF334155' } },
       };
     });
 
-    const hoja = XLSX.utils.json_to_sheet(datosParaExcel);
-    hoja['!cols'] = [
-      { wch: 5 },
-      { wch: 15 },
-      { wch: 34 },
-      { wch: 28 },
-      { wch: 10 },
-      { wch: 8 },
-      { wch: 18 },
-      { wch: 80 },
-    ];
+    // Insertar filas de alumnos con texto enriquecido por celda
+    alumnosDosOMas.forEach((alumno, index) => {
+      const rowValues: Record<string, unknown> = {
+        num: index + 1,
+        control: alumno.num_control,
+        nombre: alumno.nombre,
+        carrera: alumno.carrera,
+        semestre: alumno.semestre,
+        grupo: alumno.grupo,
+        total: alumno.total_conferencias,
+      };
 
-    const libro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(libro, hoja, '2 o mas Conferencias');
-    XLSX.writeFile(
-      libro,
-      `alumnos_2+_conferencias_${new Date().toISOString().slice(0, 10)}.xlsx`
-    );
+      const row = worksheet.addRow(rowValues);
+      const esPar = index % 2 === 1;
+      const colorFondoFila = esPar ? 'FFF8FAFC' : 'FFFFFFFF';
+
+      let maxLineasEnFila = 2;
+
+      // Rellenar cada columna de Conferencia i con RichText (Negrita arriba + Observación abajo)
+      for (let i = 0; i < maxConferencias; i++) {
+        const det = alumno.detalles_conferencias[i];
+        const cell = row.getCell(`conf_${i + 1}`);
+
+        if (det) {
+          const tieneTitulo =
+            det.titulo_evidencia &&
+            det.titulo_evidencia.toLowerCase() !== 'sin título' &&
+            det.titulo_evidencia.toLowerCase() !== 'sin titulo';
+
+          const tieneObs =
+            det.descripcion &&
+            det.descripcion.toLowerCase() !== 'sin descripción' &&
+            det.descripcion.toLowerCase() !== 'sin descripcion';
+
+          const encabezadoConf = tieneTitulo
+            ? `${det.conferencia} — "${det.titulo_evidencia}"`
+            : det.conferencia;
+
+          if (tieneObs) {
+            cell.value = {
+              richText: [
+                {
+                  font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF1E3A8A' } },
+                  text: encabezadoConf + '\n',
+                },
+                {
+                  font: { name: 'Segoe UI', size: 9, italic: false, color: { argb: 'FF334155' } },
+                  text: `Obs: ${det.descripcion}`,
+                },
+              ],
+            };
+          } else {
+            cell.value = {
+              richText: [
+                {
+                  font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF1E3A8A' } },
+                  text: encabezadoConf,
+                },
+              ],
+            };
+          }
+
+          // Estimar líneas necesarias para ajustar la altura automáticamente
+          const textoCompleto = `${encabezadoConf}\n${tieneObs ? det.descripcion : ''}`;
+          const lineasEstimadas = Math.ceil(textoCompleto.length / 44) + 1;
+          if (lineasEstimadas > maxLineasEnFila) {
+            maxLineasEnFila = lineasEstimadas;
+          }
+        } else {
+          cell.value = '—';
+        }
+      }
+
+      // Altura dinámica proporcional al contenido de las observaciones
+      row.height = Math.max(32, maxLineasEnFila * 15);
+
+      // Aplicar estilos, colores y bordes a todas las celdas de la fila
+      row.eachCell((cell, colNumber) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: colorFondoFila },
+        };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        };
+
+        // Alineación por columna
+        if (colNumber === 1 || colNumber === 2 || colNumber === 5 || colNumber === 6 || colNumber === 7) {
+          cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        } else if (colNumber >= 8) {
+          // Columnas de conferencias: alineadas arriba a la izquierda para lectura limpia
+          cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+        } else {
+          cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        }
+
+        // Fuente base para columnas de texto simple
+        if (colNumber <= 7) {
+          cell.font = {
+            name: 'Segoe UI',
+            size: 10,
+            bold: colNumber === 2 || colNumber === 7,
+            color: { argb: 'FF1E293B' },
+          };
+        }
+
+        // Resaltado especial en la celda "Total" (Verde para 2, Dorado para 3+)
+        if (colNumber === 7) {
+          const esTresOMas = alumno.total_conferencias >= 3;
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: esTresOMas ? 'FFFEF08A' : 'FFDCFCE7' },
+          };
+          cell.font = {
+            name: 'Segoe UI',
+            size: 10,
+            bold: true,
+            color: { argb: esTresOMas ? 'FF854D0E' : 'FF166534' },
+          };
+        }
+      });
+    });
+
+    // Descargar el archivo en el navegador
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `alumnos_2+_conferencias_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
-
   const handleDescargarRapido = async () => {
     if (registrosFiltrados.length === 0) {
       alert('No hay registros en pantalla para exportar.');
